@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Problema di sicurezza
+    url: https://github.com/raccasamuele/comunita-energetica-cer/security/advisories/new
+    about: Segnalalo in privato, non con una issue pubblica (vedi SECURITY.md).
+  - name: Provare il simulatore
+    url: https://cer.raccasamuele.it
+    about: Il simulatore nel browser, senza account.

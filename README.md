@@ -213,6 +213,11 @@ conservarli si usa *Salva il lavoro*. Escono dall'app solo l'indirizzo (a OpenSt
 coordinate del tetto (a OpenStreetMap, se si stimano le ombre), le coordinate arrotondate a circa 1 km (a PVGIS,
 con cache sul server per 90 giorni) e le richieste della foto aerea (a Esri, dal browser).
 
+## Contribuire
+
+Segnalazioni e proposte sono benvenute: le regole sono in [CONTRIBUTING.md](CONTRIBUTING.md) e vale il
+[codice di comportamento](CODE_OF_CONDUCT.md). Non allegare mai dati personali veri (bollette, POD, indirizzi).
+
 ## Sicurezza
 
 Un problema di sicurezza si segnala in privato, non con una issue pubblica: scrivi a **sicurezza@raccasamuele.it** o

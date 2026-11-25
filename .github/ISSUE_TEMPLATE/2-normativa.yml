@@ -1,0 +1,23 @@
+name: Regola o valore da aggiornare
+description: Una regola del GSE, dell'ARERA o del Ministero cambiata o letta in modo diverso.
+labels: ["normativa"]
+body:
+  - type: textarea
+    id: cosa
+    attributes:
+      label: Che cosa non è aggiornato
+      description: La regola o il valore usato dal simulatore, e quello che secondo te è corretto.
+    validations:
+      required: true
+  - type: textarea
+    id: fonte
+    attributes:
+      label: Fonte ufficiale
+      description: Atto o documento, data, articolo o paragrafo, link. Senza fonte la modifica non si può fare.
+    validations:
+      required: true
+  - type: textarea
+    id: effetto
+    attributes:
+      label: Che cosa cambia nei risultati
+      description: Facoltativo. Per esempio «gli incentivi di un condominio scendono del 5%».

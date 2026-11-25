@@ -1,0 +1,16 @@
+name: Proposta
+description: Un'idea per migliorare il simulatore.
+labels: ["proposta"]
+body:
+  - type: textarea
+    id: bisogno
+    attributes:
+      label: Che cosa ti serve
+      description: Il problema o la domanda a cui il simulatore oggi non risponde, e chi ne avrebbe bisogno.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Come lo immagini
+      description: Facoltativo.

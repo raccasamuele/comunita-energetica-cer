@@ -1,0 +1,43 @@
+name: Qualcosa non funziona
+description: Un errore, un blocco o un risultato che non torna.
+labels: ["problema"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Grazie della segnalazione. **Non allegare dati personali veri**: niente codici POD, nomi, indirizzi o bollette. Se serve un file, cambia nomi e numeri.
+  - type: dropdown
+    id: dove
+    attributes:
+      label: Dove
+      options:
+        - Sito (cer.raccasamuele.it)
+        - Server MCP o estensione per Claude Desktop
+        - Riga di comando cersim
+        - App Streamlit
+        - Report PDF o Excel
+        - Altro
+    validations:
+      required: true
+  - type: textarea
+    id: cosa
+    attributes:
+      label: Che cosa è successo
+      description: Che cosa hai fatto, che cosa ti aspettavi, che cosa hai visto invece.
+    validations:
+      required: true
+  - type: textarea
+    id: passi
+    attributes:
+      label: Come rifarlo
+      description: I passi per arrivarci. Se puoi, allega il progetto salvato (.json) con dati inventati.
+  - type: input
+    id: versione
+    attributes:
+      label: Versione del motore
+      description: In fondo ai Risultati del sito («motore cersim …») o in ogni risposta del server MCP.
+  - type: input
+    id: ambiente
+    attributes:
+      label: Browser o sistema
+      placeholder: per esempio Firefox 140 su Windows 11
