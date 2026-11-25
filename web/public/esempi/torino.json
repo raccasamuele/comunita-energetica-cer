@@ -1,0 +1,395 @@
+{
+  "schema": 1,
+  "configurazione": {
+    "nome": "Condominio Via Esempio 1, Torino",
+    "tipo": "CER",
+    "indirizzo": "Piazza Castello, Torino",
+    "lat": 45.0703,
+    "lon": 7.6869,
+    "regione": "Piemonte",
+    "members": [
+      {
+        "id": "Famiglia_1",
+        "nome": "Famiglia 1",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_2",
+        "nome": "Famiglia 2",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_3",
+        "nome": "Famiglia 3",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_4",
+        "nome": "Famiglia 4",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_5",
+        "nome": "Famiglia 5",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_6",
+        "nome": "Famiglia 6",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_7",
+        "nome": "Famiglia 7",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_8",
+        "nome": "Famiglia 8",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_9",
+        "nome": "Famiglia 9",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_10",
+        "nome": "Famiglia 10",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_11",
+        "nome": "Famiglia 11",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Famiglia_12",
+        "nome": "Famiglia 12",
+        "tipo_soggetto": "persona_fisica"
+      },
+      {
+        "id": "Panetteria",
+        "nome": "Panetteria",
+        "tipo_soggetto": "pmi"
+      },
+      {
+        "id": "Condominio",
+        "nome": "Condominio",
+        "tipo_soggetto": "condominio"
+      }
+    ],
+    "connection_points": [
+      {
+        "id": "Famiglia_1",
+        "titolare": "Famiglia_1",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 1800.0,
+        "fasce": {
+          "f1": 594.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1206.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_2",
+        "titolare": "Famiglia_2",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2200.0,
+        "fasce": {
+          "f1": 726.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1474.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_3",
+        "titolare": "Famiglia_3",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2700.0,
+        "fasce": {
+          "f1": 891.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1809.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_4",
+        "titolare": "Famiglia_4",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2700.0,
+        "fasce": {
+          "f1": 891.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1809.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_5",
+        "titolare": "Famiglia_5",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 3100.0,
+        "fasce": {
+          "f1": 1023.0,
+          "f2": null,
+          "f3": null,
+          "f23": 2077.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_6",
+        "titolare": "Famiglia_6",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 3500.0,
+        "fasce": {
+          "f1": 1155.0,
+          "f2": null,
+          "f3": null,
+          "f23": 2345.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_7",
+        "titolare": "Famiglia_7",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2400.0,
+        "fasce": {
+          "f1": 792.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1608.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_8",
+        "titolare": "Famiglia_8",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 1600.0,
+        "fasce": {
+          "f1": 528.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1072.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_9",
+        "titolare": "Famiglia_9",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2900.0,
+        "fasce": {
+          "f1": 957.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1943.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_10",
+        "titolare": "Famiglia_10",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 3300.0,
+        "fasce": {
+          "f1": 1089.0,
+          "f2": null,
+          "f3": null,
+          "f23": 2211.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_11",
+        "titolare": "Famiglia_11",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2000.0,
+        "fasce": {
+          "f1": 660.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1340.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Famiglia_12",
+        "titolare": "Famiglia_12",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "domestico",
+        "kwh_annui": 2600.0,
+        "fasce": {
+          "f1": 858.0,
+          "f2": null,
+          "f3": null,
+          "f23": 1742.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Panetteria",
+        "titolare": "Panetteria",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "ufficio_commerciale",
+        "kwh_annui": 14000.0,
+        "fasce": {
+          "f1": 8400.0,
+          "f2": null,
+          "f3": null,
+          "f23": 5600.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      },
+      {
+        "id": "Parti_comuni",
+        "titolare": "Condominio",
+        "ruolo": "bidirezionale",
+        "codice_pod": null,
+        "tipologia_profilo": "pa_municipio",
+        "kwh_annui": 4500.0,
+        "fasce": {
+          "f1": 2000.0,
+          "f2": null,
+          "f3": null,
+          "f23": 2500.0
+        },
+        "tensione": "BT",
+        "lat": null,
+        "lon": null,
+        "area_convenzionale": "AC-ESEMPIO",
+        "edificio_id": null,
+        "curva_misurata": null
+      }
+    ],
+    "plants": [
+      {
+        "id": "FV_tetto",
+        "nome": "FV tetto",
+        "connection_point": "Parti_comuni",
+        "potenza_moduli_kwp": 20.0,
+        "potenza_inverter_kw": 18.0,
+        "potenza_moduli_max_kwp": 35.0,
+        "tilt": 25.0,
+        "azimut": 10.0,
+        "azimut_2": null,
+        "perdite_pct": 14.0,
+        "investitore": "Condominio",
+        "proprietario": null,
+        "produttore": null,
+        "data_entrata_esercizio": "2027-04-01",
+        "data_inizio_periodo_incentivazione": null,
+        "data_decorrenza_servizio_cacer": null,
+        "data_decorrenza_vendita": null,
+        "nell_edificio": true,
+        "contributo_capitale": null,
+        "costo_preventivo_eur": null
+      }
+    ],
+    "referente": null,
+    "edificio_id_gruppo": null,
+    "data_costituzione": "2027-01-15"
+  },
+  "parametri": {
+    "quota_membri": 0.5
+  }
+}

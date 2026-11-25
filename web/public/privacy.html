@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="it" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Privacy · Comunità energetica</title>
+    <meta name="description" content="Quali dati tratta cer.raccasamuele.it e quali servizi esterni contatta. Consumi e dati dei membri restano nel tuo browser." />
+    <style>
+      :root { color-scheme: light; --bg: #f3f2f9; --surface: #ffffff; --text: #1f1d2b; --muted: #5f5c73; --accent: #6230b8; --line: #ebe9f3; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif; font-size: 1rem; line-height: 1.7; }
+      a { color: var(--accent); text-underline-offset: 4px; overflow-wrap: anywhere; }
+      a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+      .skip-link { position: absolute; left: -9999px; }
+      .skip-link:focus { left: 16px; top: 16px; background: var(--surface); padding: 8px 12px; }
+      main { width: min(760px, 100% - 32px); margin: 32px auto; background: var(--surface); border-radius: 18px; padding: clamp(20px, 5vw, 48px); }
+      main:focus { outline: none; }
+      h1 { font-size: clamp(2rem, 6vw, 2.75rem); font-weight: 600; line-height: 1.2; margin: 16px 0 0; }
+      h2 { font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin: 32px 0 0; }
+      h3 { font-size: 1rem; font-weight: 600; margin: 0; }
+      p { color: var(--muted); font-size: 0.9375rem; margin: 10px 0 0; }
+      ul { list-style: none; margin: 12px 0 0; padding: 0; }
+      li { border-top: 1px solid var(--line); padding: 14px 0; }
+      li p { margin-top: 4px; }
+      .intro { color: var(--text); font-size: 1.0625rem; margin-top: 16px; }
+      .back { font-size: 0.9375rem; }
+      .date { font-size: 0.8125rem; margin-top: 36px; }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#contenuto">Vai al contenuto</a>
+    <main id="contenuto" tabindex="-1">
+      <a class="back" href="./">← Torna al simulatore</a>
+      <h1>Privacy</h1>
+      <p class="intro">Il calcolo gira nel tuo browser: nomi, consumi e file dei contatori non vengono inviati a nessun server. Il sito non ha account, cookie né statistiche. Per funzionare, però, contatta alcuni servizi esterni: qui trovi quali, che cosa ricevono e quando.</p>
+
+      <h2>Chi è il titolare</h2>
+      <p>Samuele Racca. Per qualsiasi domanda puoi scrivermi a <a href="mailto:privacy@raccasamuele.it">privacy@raccasamuele.it</a>.</p>
+
+      <h2>Sempre, aprendo il sito</h2>
+      <ul>
+        <li>
+          <h3>Cloudflare, che ospita il sito</h3>
+          <p>Riceve i dati tecnici di ogni collegamento web: indirizzo IP, pagina richiesta, data e ora, tipo di browser. Se una connessione non riesce, il browser può segnalare l’errore a Cloudflare. Cloudflare, Inc. tratta i dati come responsabile del trattamento e può trasferirli negli Stati Uniti, sulla base del Data Privacy Framework UE-USA e delle clausole contrattuali standard. <a href="https://www.cloudflare.com/privacypolicy/">Informativa di Cloudflare</a>.</p>
+        </li>
+        <li>
+          <h3>jsDelivr, da cui il browser scarica il motore di calcolo</h3>
+          <p>Appena apri il simulatore, il browser scarica Python (Pyodide) da <code>cdn.jsdelivr.net</code>. La scheda dei consumi lo fa solo se alleghi un file. Il servizio è gestito da Volentio JSD Limited (Inghilterra e Galles), che può ricevere indirizzo IP, tipo di browser, file richiesti, data e ora, identificativi del dispositivo e l’indicazione che arrivi da questo sito, nessun dato del tuo progetto. Li usa per far funzionare il servizio, per la sicurezza e per statistiche di download pubbliche in forma aggregata. Anche i fornitori che consegnano i file vedono il tuo IP. I dati possono finire in paesi senza una decisione di adeguatezza: in quel caso jsDelivr dichiara di fare in modo, dove possibile, che il trasferimento rispetti la legge sulla protezione dei dati. <a href="https://www.jsdelivr.com/terms/privacy-policy">Informativa di jsDelivr</a>.</p>
+        </li>
+      </ul>
+
+      <h2>Quando usi una di queste funzioni</h2>
+      <p>Il calcolo ha bisogno dei dati solari di PVGIS. Le altre funzioni sono facoltative: coordinate, superficie del tetto e ombre si possono anche scrivere a mano.</p>
+      <ul>
+        <li>
+          <h3>Cerca l’indirizzo: OpenStreetMap</h3>
+          <p>Il testo che scrivi passa dal nostro intermediario su Cloudflare e arriva al servizio Nominatim della OpenStreetMap Foundation, che non riceve il tuo IP. Il testo fa parte dell’indirizzo della richiesta, quindi lo riceve anche Cloudflare, e la ricerca con la sua risposta resta nella cache di Cloudflare e del tuo browser fino a 30 giorni, senza il tuo IP. Se non vuoi dare l’indirizzo esatto, cerca solo la via o il comune. <a href="https://osmfoundation.org/wiki/Privacy_Policy">Informativa della OSM Foundation</a>.</p>
+        </li>
+        <li>
+          <h3>Calcola lo scenario: PVGIS</h3>
+          <p>Le coordinate arrotondate a circa 1 km, con l’inclinazione e l’orientamento dell’impianto, passano dall’intermediario e arrivano a PVGIS, il servizio del Centro comune di ricerca della Commissione europea, che non riceve il tuo IP. La risposta resta in cache fino a 90 giorni. <a href="https://joint-research-centre.ec.europa.eu/document/e383e065-61a0-4405-81a9-b06d34826ca6_en">Informativa di PVGIS</a>.</p>
+        </li>
+        <li>
+          <h3>Apri la foto aerea: Esri</h3>
+          <p>Il browser chiede direttamente a Esri le immagini della zona che guardi, una zona grande più o meno come una casa, con il tuo indirizzo IP. Esri ha sede negli Stati Uniti e aderisce al Data Privacy Framework UE-USA. Il disegno del tetto resta nel browser. <a href="https://www.esri.com/en-us/privacy/privacy-statements/privacy-statement">Informativa di Esri</a>.</p>
+        </li>
+        <li>
+          <h3>Stima le ombre: server pubblici Overpass</h3>
+          <p>Il browser manda direttamente il centro del tetto, arrotondato a circa 10 metri, con il tuo indirizzo IP. Prova prima <code>overpass-api.de</code> (FOSSGIS) e, se non risponde, <code>overpass.private.coffee</code> (associazione Private.coffee, Austria: <a href="https://private.coffee/privacy">informativa</a>): lo stesso dato può quindi arrivare a entrambi. Sono server di volontari che leggono i dati di OpenStreetMap, non servizi miei.</p>
+        </li>
+        <li>
+          <h3>Guarda in 3D su Google Earth</h3>
+          <p>È un link: se lo apri, Google riceve le coordinate del punto, oltre al tuo IP, secondo la propria informativa.</p>
+        </li>
+      </ul>
+
+      <h2>Perché, e su quale base</h2>
+      <p>I dati tecnici servono a consegnare le pagine e a proteggere il sito dagli abusi; gli altri servono solo a fare il calcolo o a fornire la funzione che hai chiesto. La base giuridica è il legittimo interesse a offrire un simulatore funzionante e sicuro (art. 6, par. 1, lett. f del GDPR). Il sito non tiene archivi propri dei visitatori. Per i dati che ricevono direttamente dal tuo browser, jsDelivr, Esri e i server Overpass li trattano secondo le proprie informative, che indicano anche i tempi di conservazione.</p>
+
+      <h2>Che cosa resta sul tuo dispositivo</h2>
+      <p>Nomi, consumi, indirizzo e impianti del progetto restano nella memoria di questo browser (localStorage), così una pagina ricaricata riparte da dove eri. Io non posso leggerli. Se usi un computer condiviso, chi lo usa dopo di te può ritrovarli: per toglierli premi «Torna all’inizio» e poi «Inizia un progetto», oppure cancella i dati del sito dal browser. Il file che salvi con «Salva il progetto» è tuo, e decidi tu dove tenerlo.</p>
+
+      <h2>Se coordini una comunità</h2>
+      <p>Il file dei consumi resta sul dispositivo: del POD il sito non legge nulla. La scheda che le famiglie compilano non viene salvata né inviata dal sito: la famiglia scarica un piccolo file e lo manda a te. Da quel momento quei dati, come i nomi e i consumi che inserisci, li gestisci tu, e tocca a te informare i membri. Io non li ricevo.</p>
+
+      <h2>Cookie</h2>
+      <p>Il sito non installa cookie. La bozza è necessaria alla funzione che stai usando, quindi non serve un consenso: per questo non c’è un banner.</p>
+
+      <h2>Se mi scrivi</h2>
+      <p>Le email a privacy@raccasamuele.it e a sicurezza@raccasamuele.it passano dal servizio di inoltro di Cloudflare (Email Routing) e arrivano nella mia casella di posta, gestita da Google (Gmail). Cloudflare e Google possono trattarle anche negli Stati Uniti, secondo le loro informative. Uso il tuo indirizzo e il contenuto del messaggio solo per risponderti, e li conservo per il tempo necessario a farlo.</p>
+
+      <h2>Decisioni automatizzate</h2>
+      <p>Nessuna. I risultati sono stime che restano a te e non producono effetti nei tuoi confronti.</p>
+
+      <h2>I tuoi diritti</h2>
+      <p>Puoi chiedere di accedere ai tuoi dati, di correggerli o cancellarli, di limitarne il trattamento e di opporti (artt. 15-21 del GDPR), scrivendomi all’indirizzo qui sopra. Puoi anche presentare un reclamo al <a href="https://www.garanteprivacy.it/">Garante per la protezione dei dati personali</a>.</p>
+
+      <p class="date">Ultimo aggiornamento: 31 ottobre 2026.</p>
+    </main>
+  </body>
+</html>

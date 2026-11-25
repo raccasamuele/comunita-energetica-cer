@@ -1,0 +1,1462 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cer.raccasamuele.it/schemi/progetto-cer.v1.schema.json",
+  "title": "Progetto CER",
+  "description": "Il file di progetto di cersim: lo stesso che esportano l'app e il sito (\"Esporta\"). Lo schema controlla la forma; le regole tra campi le controlla `cersim valida`.",
+  "type": "object",
+  "required": [
+    "schema",
+    "configurazione"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1,
+      "description": "Versione del formato del progetto."
+    },
+    "configurazione": {
+      "$ref": "#/$defs/Configuration"
+    },
+    "parametri": {
+      "type": "object",
+      "description": "Scelte economiche dello scenario. Le chiavi sconosciute si ignorano.",
+      "properties": {
+        "quota_membri": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Quota dei contributi GSE che va ai membri (0–1); il resto va a chi investe. Senza questa scelta l'analisi economica non si calcola: il motore non ha un riparto \"consigliato\"."
+        },
+        "costo_evitabile_eur_kwh": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Costo evitato in bolletta per ogni kWh autoconsumato, €/kWh. Vuoto: valore del motore."
+        },
+        "tasso_sconto": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 0.2,
+          "description": "Tasso di sconto reale per il VAN (0–0,2). Vuoto: valore del motore."
+        },
+        "om_assicurazione_quota_anno": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 0.1,
+          "description": "Manutenzione e assicurazione all'anno, come quota del costo dell'impianto (0–0,1)."
+        },
+        "gestione_eur_anno": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Costi di gestione della configurazione, € all'anno."
+        },
+        "costituzione_eur": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Costi di costituzione della configurazione, €."
+        },
+        "regime_vendita": {
+          "enum": [
+            "RID",
+            "mercato",
+            null
+          ],
+          "description": "Vendita dell'energia immessa: ritiro dedicato GSE (\"RID\") o sul mercato."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "BatteriaCasa": {
+      "additionalProperties": false,
+      "description": "Batteria privata dietro il contatore di un membro, dal profilo energetico della casa: si carica solo dal\nsurplus dell'impianto sullo stesso punto e si scarica sui consumi del punto, con le regole del simulatore della\ncasa (rendimento diviso in parti uguali fra carica e scarica, riserva, potenza massima). Non si carica dalla rete.",
+      "properties": {
+        "capacita_kwh": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Capacita Kwh",
+          "type": "number"
+        },
+        "potenza_kw": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000,
+          "title": "Potenza Kw",
+          "type": "number"
+        },
+        "rendimento_pct": {
+          "exclusiveMinimum": 0,
+          "maximum": 100,
+          "title": "Rendimento Pct",
+          "type": "number"
+        },
+        "riserva_pct": {
+          "default": 0.0,
+          "exclusiveMaximum": 100,
+          "minimum": 0,
+          "title": "Riserva Pct",
+          "type": "number"
+        }
+      },
+      "required": [
+        "capacita_kwh",
+        "potenza_kw",
+        "rendimento_pct"
+      ],
+      "title": "BatteriaCasa",
+      "type": "object"
+    },
+    "CapitalGrant": {
+      "additionalProperties": false,
+      "description": "Contributo in conto capitale GIÀ CONCESSO (lo strumento non ne prevede l'accesso).",
+      "properties": {
+        "importo_eur": {
+          "exclusiveMinimum": 0,
+          "title": "Importo Eur",
+          "type": "number"
+        },
+        "intensita": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "quota dei costi ammessi, dall'atto",
+          "title": "Intensita"
+        },
+        "fattore_F": {
+          "anyOf": [
+            {
+              "maximum": 0.5,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "riduzione TIP, se indicata nell'atto",
+          "title": "Fattore F"
+        },
+        "estremi_atto": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Estremi Atto",
+          "type": "string"
+        },
+        "scadenzario_incassi": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Incasso"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scadenzario Incassi"
+        }
+      },
+      "required": [
+        "importo_eur",
+        "estremi_atto"
+      ],
+      "title": "CapitalGrant",
+      "type": "object"
+    },
+    "ComuneProfilo": {
+      "additionalProperties": false,
+      "properties": {
+        "codice_istat": {
+          "pattern": "^[0-9]{6}$",
+          "title": "Codice Istat",
+          "type": "string"
+        },
+        "nome": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Nome",
+          "type": "string"
+        },
+        "lat": {
+          "maximum": 48,
+          "minimum": 35,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 19,
+          "minimum": 6,
+          "title": "Lon",
+          "type": "number"
+        }
+      },
+      "required": [
+        "codice_istat",
+        "nome",
+        "lat",
+        "lon"
+      ],
+      "title": "ComuneProfilo",
+      "type": "object"
+    },
+    "ConnectionPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Id",
+          "type": "string",
+          "description": "Identificativo univoco del contatore, usato dagli impianti."
+        },
+        "titolare": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Titolare",
+          "type": "string",
+          "description": "Identificativo del membro titolare."
+        },
+        "ruolo": {
+          "$ref": "#/$defs/Ruolo",
+          "default": "bidirezionale",
+          "description": "\"bidirezionale\": preleva e immette; \"sola_immissione\": solo un impianto, senza consumi."
+        },
+        "codice_pod": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Codice Pod",
+          "description": "Codice POD, facoltativo: non serve al calcolo."
+        },
+        "tipologia_profilo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Tipologia"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Forma tipica dei consumi orari quando non c'è una curva oraria. Obbligatoria tranne che per i contatori di sola immissione."
+        },
+        "kwh_annui": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kwh Annui",
+          "description": "Consumo annuo in kWh, dalla bolletta. Se mancano consumo, fasce e curva, solo per i domestici vale la famiglia tipo ARERA (2700 kWh)."
+        },
+        "fasce": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fasce"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Consumo annuo per fascia oraria, dalla bolletta. Con kwh_annui la somma deve tornare entro il 5%."
+        },
+        "tensione": {
+          "$ref": "#/$defs/Tensione",
+          "default": "BT",
+          "description": "Livello di tensione della connessione."
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "maximum": 90,
+              "minimum": -90,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat",
+          "description": "Latitudine del contatore, se diversa da quella della configurazione."
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon",
+          "description": "Longitudine del contatore, se diversa da quella della configurazione."
+        },
+        "area_convenzionale": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area Convenzionale",
+          "description": "Area convenzionale GSE (cabina primaria). In una CER i membri devono stare nella stessa."
+        },
+        "edificio_id": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Edificio Id",
+          "description": "Edificio del contatore: in un gruppo deve coincidere con edificio_id_gruppo."
+        },
+        "curva_misurata": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CurvaMisurata"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Consumi orari (misurati o calcolati): se ci sono, prevalgono su kwh_annui, fasce e tipologia."
+        },
+        "batteria": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BatteriaCasa"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Batteria di casa dietro il contatore (dal profilo energetico): richiede un impianto sullo stesso contatore."
+        },
+        "profilo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProfiloPunto"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Scenario del profilo energetico della casa da cui vengono curva e batteria, conservato per riscaricarlo."
+        }
+      },
+      "required": [
+        "id",
+        "titolare"
+      ],
+      "title": "ConnectionPoint",
+      "type": "object",
+      "description": "Un contatore (punto di connessione, POD)."
+    },
+    "CurvaMisurata": {
+      "additionalProperties": false,
+      "description": "Forma media dei consumi orari: 864 valori in kWh, per tipo di giorno (feriale, sabato, festivo) × mese × ora civile. Si ricava dai file del distributore (cersim.misure) o dal formato curva-consumi (docs/formato_curva_consumi.md); non contiene il POD né le singole letture.",
+      "properties": {
+        "ore": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Ore",
+          "type": "array",
+          "description": "864 valori in kWh, nell'ordine tipo di giorno × mese × ora."
+        },
+        "natura": {
+          "$ref": "#/$defs/NaturaCurva",
+          "default": "misurata",
+          "description": "\"misurata\" (dai contatori) o \"calcolata\" (da un modello)."
+        },
+        "giorni": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Giorni",
+          "description": "Giorni con misure. Solo per le curve misurate."
+        },
+        "dal": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dal",
+          "description": "Primo giorno delle misure. Solo per le curve misurate."
+        },
+        "al": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Al",
+          "description": "Ultimo giorno delle misure. Solo per le curve misurate."
+        },
+        "kwh_annui": {
+          "maximum": 10000000.0,
+          "minimum": 0,
+          "title": "Kwh Annui",
+          "type": "number",
+          "description": "Stima del consumo annuo dalla forma media."
+        },
+        "fonte": {
+          "maxLength": 80,
+          "title": "Fonte",
+          "type": "string",
+          "description": "Da dove vengono i dati, testo libero."
+        },
+        "giorni_veri": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Giorni Veri",
+          "type": "array",
+          "description": "Giorni veri senza data, per non sottostimare i picchi: [cella, 24 valori in kWh]."
+        },
+        "fv_sottratto_kwp": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 10000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fv Sottratto Kwp",
+          "description": "kWp di fotovoltaico già tolti dai consumi: la curva sono prelievi, non consumi lordi."
+        },
+        "batteria_kwh": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 1000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Batteria Kwh",
+          "description": "Capacità della batteria di casa già considerata nei prelievi."
+        }
+      },
+      "required": [
+        "ore",
+        "kwh_annui",
+        "fonte"
+      ],
+      "title": "CurvaMisurata",
+      "type": "object"
+    },
+    "Fasce": {
+      "additionalProperties": false,
+      "description": "Consumi annui per fascia, in kWh: F1/F2/F3 oppure F1/F23.",
+      "properties": {
+        "f1": {
+          "minimum": 0,
+          "title": "F1",
+          "type": "number",
+          "description": "kWh in fascia F1."
+        },
+        "f2": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "F2",
+          "description": "kWh in fascia F2 (insieme a f3, in alternativa a f23)."
+        },
+        "f3": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "F3",
+          "description": "kWh in fascia F3 (insieme a f2, in alternativa a f23)."
+        },
+        "f23": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "F23",
+          "description": "kWh in fascia F2 + F3 (in alternativa a f2 e f3)."
+        }
+      },
+      "required": [
+        "f1"
+      ],
+      "title": "Fasce",
+      "type": "object"
+    },
+    "FvProfilo": {
+      "additionalProperties": false,
+      "description": "Il FV dello scenario di un profilo energetico, come l'ha descritto chi l'ha scritto.",
+      "properties": {
+        "kwp": {
+          "exclusiveMinimum": 0,
+          "maximum": 10000,
+          "title": "Kwp",
+          "type": "number"
+        },
+        "inclinazione": {
+          "maximum": 90,
+          "minimum": 0,
+          "title": "Inclinazione",
+          "type": "number"
+        },
+        "orientamento": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Orientamento",
+          "type": "number"
+        },
+        "perdite_pct": {
+          "maximum": 50,
+          "minimum": 0,
+          "title": "Perdite Pct",
+          "type": "number"
+        },
+        "esistente": {
+          "title": "Esistente",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kwp",
+        "inclinazione",
+        "orientamento",
+        "perdite_pct",
+        "esistente"
+      ],
+      "title": "FvProfilo",
+      "type": "object"
+    },
+    "Incasso": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "format": "date",
+          "title": "Data",
+          "type": "string"
+        },
+        "importo_eur": {
+          "exclusiveMinimum": 0,
+          "title": "Importo Eur",
+          "type": "number"
+        }
+      },
+      "required": [
+        "data",
+        "importo_eur"
+      ],
+      "title": "Incasso",
+      "type": "object"
+    },
+    "Member": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Id",
+          "type": "string",
+          "description": "Identificativo univoco, usato dai contatori (titolare) e dagli impianti (investitore…). Lettere, cifre, _ . -. Non può essere un nome riservato (configurazione, GSE, mercato, fornitori, bolletta_evitata, terzo)."
+        },
+        "nome": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Nome",
+          "type": "string",
+          "description": "Nome leggibile, per i report."
+        },
+        "tipo_soggetto": {
+          "$ref": "#/$defs/TipoSoggetto",
+          "description": "Tipo giuridico: decide se il membro è ammesso e come si dividono le quote."
+        }
+      },
+      "required": [
+        "id",
+        "nome",
+        "tipo_soggetto"
+      ],
+      "title": "Member",
+      "type": "object",
+      "description": "Un membro della configurazione."
+    },
+    "NaturaCurva": {
+      "enum": [
+        "misurata",
+        "calcolata"
+      ],
+      "title": "NaturaCurva",
+      "type": "string"
+    },
+    "Plant": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Id",
+          "type": "string",
+          "description": "Identificativo univoco dell'impianto."
+        },
+        "nome": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Nome",
+          "type": "string",
+          "description": "Nome leggibile, per i report."
+        },
+        "connection_point": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Connection Point",
+          "type": "string",
+          "description": "Identificativo del contatore a cui è collegato."
+        },
+        "potenza_moduli_kwp": {
+          "exclusiveMinimum": 0,
+          "maximum": 5000.0,
+          "title": "Potenza Moduli Kwp",
+          "type": "number",
+          "description": "Potenza dei moduli in kWp (lato continua)."
+        },
+        "potenza_inverter_kw": {
+          "exclusiveMinimum": 0,
+          "maximum": 5000.0,
+          "title": "Potenza Inverter Kw",
+          "type": "number",
+          "description": "Potenza degli inverter in kW (lato alternata). Per il GSE conta il minore dei due."
+        },
+        "potenza_moduli_max_kwp": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 5000.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Potenza Moduli Max Kwp",
+          "description": "Potenza massima installabile, per provare taglie diverse."
+        },
+        "tilt": {
+          "default": 30.0,
+          "maximum": 90,
+          "minimum": 0,
+          "title": "Tilt",
+          "type": "number",
+          "description": "Inclinazione dei moduli in gradi (0 = orizzontale)."
+        },
+        "azimut": {
+          "default": 0.0,
+          "description": "Orientamento in gradi, convenzione PVGIS: 0 = sud, 90 = ovest, -90 = est.",
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Azimut",
+          "type": "number"
+        },
+        "azimut_2": {
+          "anyOf": [
+            {
+              "maximum": 180,
+              "minimum": -180,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Orientamento della seconda falda, se i moduli sono divisi a metà su due falde.",
+          "title": "Azimut 2"
+        },
+        "perdite_pct": {
+          "default": 14.0,
+          "maximum": 50,
+          "minimum": 0,
+          "title": "Perdite Pct",
+          "type": "number",
+          "description": "Perdite di sistema in percentuale, ombre comprese (PVGIS usa 14 come valore tipico)."
+        },
+        "investitore": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\-]+$",
+          "title": "Investitore",
+          "type": "string",
+          "description": "Chi paga l'impianto: identificativo di un membro oppure \"terzo\"."
+        },
+        "proprietario": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.\\-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proprietario",
+          "description": "Proprietario, se diverso dall'investitore."
+        },
+        "produttore": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.\\-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Produttore",
+          "description": "Produttore per il GSE, se diverso dal proprietario."
+        },
+        "data_entrata_esercizio": {
+          "format": "date",
+          "title": "Data Entrata Esercizio",
+          "type": "string",
+          "description": "Data (prevista) di entrata in esercizio, AAAA-MM-GG."
+        },
+        "data_inizio_periodo_incentivazione": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data Inizio Periodo Incentivazione",
+          "description": "Inizio dei 20 anni di tariffa premio, se diverso dall'entrata in esercizio."
+        },
+        "data_decorrenza_servizio_cacer": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data Decorrenza Servizio Cacer",
+          "description": "Decorrenza del servizio per l'autoconsumo diffuso, se diversa."
+        },
+        "data_decorrenza_vendita": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data Decorrenza Vendita",
+          "description": "Decorrenza della vendita dell'energia, se diversa."
+        },
+        "nell_edificio": {
+          "default": true,
+          "title": "Nell Edificio",
+          "type": "boolean",
+          "description": "Se l'impianto è nell'edificio (o nel condominio) della configurazione."
+        },
+        "contributo_capitale": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CapitalGrant"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Contributo in conto capitale già concesso (per esempio PNRR), con gli estremi dell'atto."
+        },
+        "costo_preventivo_eur": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 50000000.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Costo Preventivo Eur",
+          "description": "Costo complessivo da preventivo, IVA esclusa. Se manca si usano le assunzioni economiche del motore."
+        }
+      },
+      "required": [
+        "id",
+        "nome",
+        "connection_point",
+        "potenza_moduli_kwp",
+        "potenza_inverter_kw",
+        "investitore",
+        "data_entrata_esercizio"
+      ],
+      "title": "Plant",
+      "type": "object",
+      "description": "Un impianto fotovoltaico."
+    },
+    "PrezzoBolletta": {
+      "additionalProperties": false,
+      "description": "Il prezzo variabile dell'elettricità nella bolletta della casa, imposte comprese, €/kWh prelevato.\nCon le fasce, ogni ora ARERA usa il prezzo della sua fascia; senza, vale `eur_kwh` in tutte le ore.",
+      "properties": {
+        "eur_kwh": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Eur Kwh",
+          "type": "number"
+        },
+        "fasce": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "propertyNames": {
+                "enum": [
+                  "F1",
+                  "F2",
+                  "F3"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fasce"
+        },
+        "stato": {
+          "pattern": "^(documentato|misurato|ipotizzato)$",
+          "title": "Stato",
+          "type": "string"
+        }
+      },
+      "required": [
+        "eur_kwh",
+        "stato"
+      ],
+      "title": "PrezzoBolletta",
+      "type": "object"
+    },
+    "ProfiloPunto": {
+      "additionalProperties": false,
+      "description": "Lo scenario del profilo energetico caricato su un contatore, conservato per riscaricare il profilo senza\nperdite (`cersim.profilo.esporta_profilo`). I consumi stanno nella curva del punto, la batteria nel punto.",
+      "properties": {
+        "fonte": {
+          "maxLength": 40,
+          "title": "Fonte",
+          "type": "string"
+        },
+        "motore": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motore"
+        },
+        "data": {
+          "format": "date",
+          "title": "Data",
+          "type": "string"
+        },
+        "comune": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComuneProfilo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "scenario": {
+          "pattern": "^[A-Za-z0-9-]{1,20}$",
+          "title": "Scenario",
+          "type": "string"
+        },
+        "nome": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Nome",
+          "type": "string"
+        },
+        "attuale": {
+          "title": "Attuale",
+          "type": "boolean"
+        },
+        "natura_consumi": {
+          "default": "calcolato",
+          "pattern": "^(calcolato|misurato)$",
+          "title": "Natura Consumi",
+          "type": "string"
+        },
+        "periodo": {
+          "anyOf": [
+            {
+              "maxItems": 3,
+              "minItems": 3,
+              "prefixItems": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "format": "date",
+                  "type": "string"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Periodo"
+        },
+        "stato_consumi": {
+          "title": "Stato Consumi",
+          "type": "string"
+        },
+        "usi": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UsiProfilo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "fv": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FvProfilo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "prelievi_kwh": {
+          "maximum": 10000000.0,
+          "minimum": 0,
+          "title": "Prelievi Kwh",
+          "type": "number"
+        },
+        "prelievi": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Prelievi",
+          "type": "array"
+        },
+        "stima": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StimaProfilo"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "conta_fv": {
+          "title": "Conta Fv",
+          "type": "boolean"
+        },
+        "consumi_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Consumi Kwh"
+        },
+        "consumi": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Consumi"
+        },
+        "batteria": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BatteriaCasa"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bolletta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PrezzoBolletta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "fonte",
+        "data",
+        "scenario",
+        "nome",
+        "attuale",
+        "stato_consumi",
+        "prelievi_kwh",
+        "prelievi",
+        "conta_fv"
+      ],
+      "title": "ProfiloPunto",
+      "type": "object"
+    },
+    "Ruolo": {
+      "enum": [
+        "bidirezionale",
+        "sola_immissione"
+      ],
+      "title": "Ruolo",
+      "type": "string"
+    },
+    "StimaProfilo": {
+      "additionalProperties": false,
+      "description": "Immissioni e autoconsumo annui stimati da chi ha scritto il profilo, solo per confronto (kWh).",
+      "properties": {
+        "immissioni_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Immissioni Kwh"
+        },
+        "autoconsumo_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Autoconsumo Kwh"
+        }
+      },
+      "title": "StimaProfilo",
+      "type": "object"
+    },
+    "Tensione": {
+      "enum": [
+        "BT",
+        "MT"
+      ],
+      "title": "Tensione",
+      "type": "string"
+    },
+    "TipoConfigurazione": {
+      "enum": [
+        "CER",
+        "gruppo"
+      ],
+      "title": "TipoConfigurazione",
+      "type": "string"
+    },
+    "TipoSoggetto": {
+      "enum": [
+        "persona_fisica",
+        "condominio",
+        "ente_territoriale",
+        "ente_religioso",
+        "terzo_settore",
+        "pmi",
+        "grande_impresa",
+        "altro"
+      ],
+      "title": "TipoSoggetto",
+      "type": "string"
+    },
+    "Tipologia": {
+      "enum": [
+        "domestico",
+        "ufficio_commerciale",
+        "scuola",
+        "pa_municipio",
+        "pmi"
+      ],
+      "title": "Tipologia",
+      "type": "string"
+    },
+    "UsiProfilo": {
+      "additionalProperties": false,
+      "description": "Di cui dei consumi elettrici di uno scenario, come li ha calcolati il simulatore della casa (kWh all'anno).",
+      "properties": {
+        "altri_usi_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Altri Usi Kwh"
+        },
+        "pompa_di_calore_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pompa Di Calore Kwh"
+        },
+        "raffrescamento_kwh": {
+          "anyOf": [
+            {
+              "maximum": 10000000.0,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raffrescamento Kwh"
+        }
+      },
+      "title": "UsiProfilo",
+      "type": "object"
+    },
+    "Configuration": {
+      "additionalProperties": false,
+      "properties": {
+        "nome": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Nome",
+          "type": "string",
+          "description": "Nome libero della configurazione, per i report."
+        },
+        "tipo": {
+          "$ref": "#/$defs/TipoConfigurazione",
+          "description": "\"gruppo\": autoconsumatori nello stesso edificio; \"CER\": comunità energetica rinnovabile."
+        },
+        "indirizzo": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Indirizzo",
+          "description": "Indirizzo indicativo, solo per i report."
+        },
+        "lat": {
+          "description": "Latitudine in gradi decimali (WGS84). Il simulatore vale solo per l'Italia: tra 35 e 48.",
+          "maximum": 48,
+          "minimum": 35,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "description": "Longitudine in gradi decimali (WGS84). Il simulatore vale solo per l'Italia: tra 6 e 19.",
+          "maximum": 19,
+          "minimum": 6,
+          "title": "Lon",
+          "type": "number"
+        },
+        "regione": {
+          "title": "Regione",
+          "type": "string",
+          "description": "Regione italiana (per esempio \"Piemonte\"): decide la zona di mercato dei prezzi e la maggiorazione della tariffa premio. Accetta anche varianti di scrittura comuni."
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/Member"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Members",
+          "type": "array",
+          "description": "I membri: chi partecipa, con il tipo di soggetto che decide l'ammissibilità."
+        },
+        "connection_points": {
+          "items": {
+            "$ref": "#/$defs/ConnectionPoint"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Connection Points",
+          "type": "array",
+          "description": "I contatori (POD): l'unità del bilancio energetico. Un membro può averne più di uno."
+        },
+        "plants": {
+          "items": {
+            "$ref": "#/$defs/Plant"
+          },
+          "maxItems": 50,
+          "title": "Plants",
+          "type": "array",
+          "description": "Gli impianti fotovoltaici, ognuno collegato a un contatore (al massimo uno per contatore)."
+        },
+        "referente": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.\\-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Referente",
+          "description": "Identificativo del membro referente verso il GSE, se scelto."
+        },
+        "edificio_id_gruppo": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Edificio Id Gruppo",
+          "description": "Per un gruppo di autoconsumatori: l'edificio comune. Obbligatorio se tipo è \"gruppo\"."
+        },
+        "data_costituzione": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Data Costituzione",
+          "description": "Data (prevista) di costituzione della configurazione, AAAA-MM-GG."
+        }
+      },
+      "required": [
+        "nome",
+        "tipo",
+        "lat",
+        "lon",
+        "regione",
+        "members",
+        "connection_points"
+      ],
+      "title": "Configuration",
+      "type": "object",
+      "description": "La configurazione: gruppo di autoconsumatori (un edificio) o comunità energetica rinnovabile (CER)."
+    }
+  }
+}

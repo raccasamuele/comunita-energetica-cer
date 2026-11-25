@@ -1,0 +1,62 @@
+# Pacchetto normativo: tutti i parametri dei contributi GSE usati da cersim.
+# Ogni voce rimanda a docs/fonti_normative.md. Alla scadenza l'app disabilita
+# TIP, CACV e risultati economici finché il pacchetto non viene rivisto.
+
+versione: "2026-10-15"
+revisione: 2026-10-15
+scadenza: 2027-04-30  # dopo la pubblicazione dei valori TIT 2027 e di eventuali nuove Regole Operative
+fonti:
+  DM: "DM MASE 7 dicembre 2023, n. 414 (Decreto CACER)"
+  RO: "GSE, Regole Operative Decreto CACER e TIAD, versione del 16 luglio 2025"
+  TIT: "ARERA, tariffa di trasmissione TRAS, periodo 2024-2027 (delibera 615/2023/R/eel)"
+  DM106: "DM MASE 15 marzo 2024, n. 106 (corrispettivi GSE)"
+
+tip:
+  fonte: "DM Allegato 1; RO par. 2.2.2.1.2"
+  prezzo_riferimento_eur_mwh: 180
+  fasce:  # per potenza nominale GSE dell'impianto, estremo superiore incluso
+    - {fino_a_kw: 200, base_eur_mwh: 80, cap_eur_mwh: 120}
+    - {fino_a_kw: 600, base_eur_mwh: 70, cap_eur_mwh: 110}
+    - {fino_a_kw: 1000, base_eur_mwh: 60, cap_eur_mwh: 100}
+  correzione_geografica_fv_eur_mwh: {Nord: 10, Centro: 4, Sud: 0}  # sommata dopo il tetto
+  durata_anni: 20  # dalla data di entrata in esercizio commerciale (DM art. 4 c. 3)
+  # DM art. 1 c. 2: il Titolo II (tariffa premio) si applica fino a 30 giorni dopo il raggiungimento di 5 GW
+  # incentivati "e comunque non oltre il 31 dicembre 2027". Impianti in esercizio dopo: nessun nuovo accesso,
+  # salvo proroghe (al 16/10/2026 richiesta dalle associazioni, non decisa). Contingente: ~0,5 GW ad agosto 2026.
+  termine_accesso_entrata_esercizio: 2027-12-31
+  F_massimo: 0.5
+  intensita_per_F_massimo: 0.40  # F lineare tra 0 e 0,5 per contributi tra 0 e 40% ("nella generalità dei casi")
+  soggetti_esenti_F_fonte: "RO p. 41: enti territoriali, enti religiosi, terzo settore e protezione ambientale, persone fisiche"
+
+eccedenza:
+  fonte: "DM art. 3 c. 2 lett. g) e Allegato 1 par. 4; RO par. 2.2.2.1.3"
+  soglia_solo_tip: 0.55
+  soglia_con_contributo_capitale: 0.45
+
+cacv:
+  fonte: "RO par. 2.2.2.2.2 (formula); TIT (valori TRASE); TIT 2026, delibera ARERA 575/2025/R/eel, Tabella 3 (BTAU 2024-2026, massimo tra BTA1-BTA6)"
+  trase_eur_mwh: {2024: 10.57, 2025: 11.89, 2026: 11.90}
+  btau_max_eur_mwh: {2024: 0.65, 2025: 0.73, 2026: 0.68}  # 0,065 / 0,073 / 0,068 c€/kWh, verificati il 02/11/2026
+  coefficiente_perdite_evitate: {BT: 0.026, MT: 0.012}
+  durata_anni: 20
+  rinnovo_oltre_durata: true  # RO p. 35: rinnovo tacito annuale delle sole parti di valorizzazione
+
+corrispettivi_gse:
+  fonte: "DM106; GSE pagina Corrispettivi e tariffa"
+  nota: "DM106, Allegato 1 lett. a: quota variabile sulla sola potenza oltre 20 kW"
+  fasce:
+    - {fino_a_kw: 3, fisso_eur_anno: 0, variabile_eur_kw_anno: 0}
+    - {fino_a_kw: 20, fisso_eur_anno: 15, variabile_eur_kw_anno: 0}
+    - {fino_a_kw: 1000, fisso_eur_anno: 15, variabile_eur_kw_anno: 1, variabile_oltre_kw: 20}
+
+rid:
+  fonte: "DM MiSE 24/12/2014, tabella 3 (GSE, Tariffe per la copertura degli oneri sostenuti dal GSE), fonte solare"
+  verificato: true
+  # Tariffa annua a scaglioni progressivi sulla potenza nominale, con massimale; esenti gli impianti fino a 3 kW.
+  # Esempio GSE: 19 kW → 19 × 0,7 = 13,3 €/anno. Importi IVA esclusa.
+  esenti_fino_a_kw: 3
+  scaglioni:
+    - {fino_a_kw: 20, eur_per_kw: 0.70}
+    - {fino_a_kw: 200, eur_per_kw: 0.65}
+    - {fino_a_kw: 1000000, eur_per_kw: 0.60}
+  massimale_eur_anno: 10000

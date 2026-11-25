@@ -1,0 +1,59 @@
+[server]
+# file caricabili: salvataggi JSON e prezzi orari (un anno quartorario ≈ 2 MB)
+maxUploadSize = 5
+# serve il font Geist da ./static (nessuna richiesta a servizi esterni per i caratteri)
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "viewer"
+
+# Palette di DESIGN.md: neutri freddi grigio ardesia, un solo accento blu petrolio
+# per azioni e stato. Contrasti verificati WCAG 2.1 AA.
+[theme]
+base = "light"
+primaryColor = "#1f5f6b"
+backgroundColor = "#f4f7f8"
+secondaryBackgroundColor = "#eaf0f2"
+textColor = "#172026"
+linkColor = "#164852"
+borderColor = "#d6dee2"
+showWidgetBorder = true
+baseRadius = "0.5rem"
+buttonRadius = "0.5rem"
+baseFontSize = 16
+font = "Geist, system-ui, sans-serif"
+headingFont = "Geist, system-ui, sans-serif"
+headingFontSizes = ["2rem", "1.5rem", "1.25rem", "1.0625rem", "1rem", "0.875rem"]
+headingFontWeights = [650, 620, 600, 600, 600, 600]
+metricValueFontWeight = 600
+dataframeHeaderBackgroundColor = "#eaf0f2"
+dataframeBorderColor = "#d6dee2"
+redColor = "#a83630"
+redBackgroundColor = "#ffe7e4"
+redTextColor = "#a83630"
+greenColor = "#346c42"
+greenBackgroundColor = "#e1f5e4"
+greenTextColor = "#346c42"
+yellowColor = "#845a0f"
+yellowBackgroundColor = "#fcedcd"
+yellowTextColor = "#845a0f"
+orangeColor = "#9d4529"
+orangeBackgroundColor = "#fee5dc"
+orangeTextColor = "#82341a"
+blueColor = "#1f5f6b"
+blueBackgroundColor = "#e3eff1"
+blueTextColor = "#164852"
+chartCategoricalColors = ["#e6ac3d", "#314968", "#4b9779", "#b44e2e", "#87939a"]
+
+[[theme.fontFaces]]
+family = "Geist"
+url = "app/static/Geist-Variable.woff2"
+weight = "100 900"
+style = "normal"
+
+[theme.sidebar]
+backgroundColor = "#eaf0f2"
+secondaryBackgroundColor = "#ffffff"

@@ -1,0 +1,64 @@
+{
+  "tokens": {
+    "--text": "#1f1d2b",
+    "--muted": "#6b6880",
+    "--bg": "#f3f2f9",
+    "--surface": "#ffffff",
+    "--accent-text": "#6230b8",
+    "--control-line": "#79758b",
+    "--ok-text": "#08664e",
+    "--ok-soft": "#e3f7f0",
+    "--bad-text": "#a9212a",
+    "--bad-soft": "#fde8e8",
+    "--warn-text": "#814800",
+    "--warn-soft": "#fff3df",
+    "color-scheme": "light"
+  },
+  "checks": [
+    {
+      "nome": "Testo",
+      "contrasto": 16.549887405924686,
+      "min": 4.5
+    },
+    {
+      "nome": "Testo tenue",
+      "contrasto": 5.361261837015582,
+      "min": 4.5
+    },
+    {
+      "nome": "Testo tenue su sfondo",
+      "contrasto": 4.819953153249173,
+      "min": 4.5
+    },
+    {
+      "nome": "Link e (?)",
+      "contrasto": 7.971898333413993,
+      "min": 4.5
+    },
+    {
+      "nome": "Controlli",
+      "contrasto": 4.439444552326716,
+      "min": 3
+    },
+    {
+      "nome": "Successo",
+      "contrasto": 6.232855244024752,
+      "min": 4.5
+    },
+    {
+      "nome": "Errore",
+      "contrasto": 6.087317749927358,
+      "min": 4.5
+    },
+    {
+      "nome": "Attenzione",
+      "contrasto": 6.690662598045582,
+      "min": 4.5
+    }
+  ],
+  "focus": {
+    "outline": "solid",
+    "width": "2px"
+  },
+  "icone_decodificate": 42
+}

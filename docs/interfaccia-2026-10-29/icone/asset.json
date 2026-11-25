@@ -1,0 +1,695 @@
+{
+  "source_sha256": "5449d9a0af7935f1713d8f817148decd7722f09a03f8806f63967f63e9d05b31",
+  "sheet": [
+    1774,
+    887
+  ],
+  "grid": [
+    4,
+    2
+  ],
+  "assets": [
+    {
+      "file": "comunita.webp",
+      "size": 48,
+      "bytes": 2048,
+      "crop": [
+        57,
+        111,
+        411,
+        444
+      ]
+    },
+    {
+      "file": "comunita-2x.webp",
+      "size": 96,
+      "bytes": 4174,
+      "crop": [
+        57,
+        111,
+        411,
+        444
+      ]
+    },
+    {
+      "file": "contatore.webp",
+      "size": 48,
+      "bytes": 1448,
+      "crop": [
+        104,
+        116,
+        377,
+        426
+      ]
+    },
+    {
+      "file": "contatore-2x.webp",
+      "size": 96,
+      "bytes": 3004,
+      "crop": [
+        104,
+        116,
+        377,
+        426
+      ]
+    },
+    {
+      "file": "tetto-mappa.webp",
+      "size": 48,
+      "bytes": 2136,
+      "crop": [
+        30,
+        82,
+        384,
+        444
+      ]
+    },
+    {
+      "file": "tetto-mappa-2x.webp",
+      "size": 96,
+      "bytes": 4802,
+      "crop": [
+        30,
+        82,
+        384,
+        444
+      ]
+    },
+    {
+      "file": "condivisa.webp",
+      "size": 48,
+      "bytes": 2598,
+      "crop": [
+        46,
+        112,
+        393,
+        440
+      ]
+    },
+    {
+      "file": "condivisa-2x.webp",
+      "size": 96,
+      "bytes": 5974,
+      "crop": [
+        46,
+        112,
+        393,
+        440
+      ]
+    },
+    {
+      "file": "riparto.webp",
+      "size": 48,
+      "bytes": 1722,
+      "crop": [
+        82,
+        79,
+        413,
+        376
+      ]
+    },
+    {
+      "file": "riparto-2x.webp",
+      "size": 96,
+      "bytes": 3488,
+      "crop": [
+        82,
+        79,
+        413,
+        376
+      ]
+    },
+    {
+      "file": "economia-comunita.webp",
+      "size": 48,
+      "bytes": 1880,
+      "crop": [
+        35,
+        80,
+        405,
+        381
+      ]
+    },
+    {
+      "file": "economia-comunita-2x.webp",
+      "size": 96,
+      "bytes": 4020,
+      "crop": [
+        35,
+        80,
+        405,
+        381
+      ]
+    },
+    {
+      "file": "scheda-famiglia.webp",
+      "size": 48,
+      "bytes": 1274,
+      "crop": [
+        109,
+        55,
+        354,
+        393
+      ]
+    },
+    {
+      "file": "scheda-famiglia-2x.webp",
+      "size": 96,
+      "bytes": 2512,
+      "crop": [
+        109,
+        55,
+        354,
+        393
+      ]
+    },
+    {
+      "file": "ombre.webp",
+      "size": 48,
+      "bytes": 2290,
+      "crop": [
+        42,
+        60,
+        405,
+        393
+      ]
+    },
+    {
+      "file": "ombre-2x.webp",
+      "size": 96,
+      "bytes": 5176,
+      "crop": [
+        42,
+        60,
+        405,
+        393
+      ]
+    }
+  ],
+  "verifica_tutti_i_file": [
+    {
+      "file": "bolletta-2x.webp",
+      "bytes": 3202,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "bolletta.webp",
+      "bytes": 1894,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "casa-2x.webp",
+      "bytes": 2792,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "casa.webp",
+      "bytes": 1768,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "clima-2x.webp",
+      "bytes": 3164,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "clima.webp",
+      "bytes": 2022,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "comunita-2x.webp",
+      "bytes": 4174,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "comunita.webp",
+      "bytes": 2048,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "condivisa-2x.webp",
+      "bytes": 5974,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "condivisa.webp",
+      "bytes": 2598,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "contatore-2x.webp",
+      "bytes": 3004,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "contatore.webp",
+      "bytes": 1448,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "costi-2x.webp",
+      "bytes": 2902,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "costi.webp",
+      "bytes": 1762,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "crescita-2x.webp",
+      "bytes": 3920,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "crescita.webp",
+      "bytes": 2170,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "economia-comunita-2x.webp",
+      "bytes": 4020,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "economia-comunita.webp",
+      "bytes": 1880,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "localita-2x.webp",
+      "bytes": 4108,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "localita.webp",
+      "bytes": 2230,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "nome-2x.webp",
+      "bytes": 2578,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "nome.webp",
+      "bytes": 1560,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "ombre-2x.webp",
+      "bytes": 5176,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "ombre.webp",
+      "bytes": 2290,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "rapida-2x.webp",
+      "bytes": 2954,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "rapida.webp",
+      "bytes": 1764,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "report-2x.webp",
+      "bytes": 2798,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "report.webp",
+      "bytes": 1696,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "riparto-2x.webp",
+      "bytes": 3488,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "riparto.webp",
+      "bytes": 1722,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "risultati-2x.webp",
+      "bytes": 2742,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "risultati.webp",
+      "bytes": 1668,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "scheda-famiglia-2x.webp",
+      "bytes": 2512,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "scheda-famiglia.webp",
+      "bytes": 1274,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "sensibilita-2x.webp",
+      "bytes": 3992,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "sensibilita.webp",
+      "bytes": 2308,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "solare-2x.webp",
+      "bytes": 4588,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "solare.webp",
+      "bytes": 2530,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "tetto-mappa-2x.webp",
+      "bytes": 4802,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "tetto-mappa.webp",
+      "bytes": 2136,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "verifica-2x.webp",
+      "bytes": 3256,
+      "size": [
+        96,
+        96
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "file": "verifica.webp",
+      "bytes": 1960,
+      "size": [
+        48,
+        48
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    }
+  ]
+}

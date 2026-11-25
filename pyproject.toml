@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cersim"
+version = "0.2.0"
+description = "Simulatore di Comunità Energetiche Rinnovabili e gruppi di autoconsumatori per comuni e condomini"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "LICENZA.md"]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "pydantic>=2.6",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+    "tzdata>=2024.1",
+    "fpdf2>=2.8",
+    "matplotlib>=3.8",
+    "openpyxl>=3.1",
+]
+
+[project.scripts]
+cersim = "cersim.cli:main"
+cersim-mcp = "cersim.mcp.server:main"
+
+[project.optional-dependencies]
+app = ["streamlit>=1.40", "folium>=0.19", "streamlit-folium>=0.27"]
+dev = ["pytest>=8", "jsonschema>=4.18", "streamlit>=1.40", "folium>=0.19", "streamlit-folium>=0.27"]
+
+[tool.setuptools.packages.find]
+include = ["cersim*"]
+
+[tool.setuptools.package-data]
+cersim = ["data/*.yaml", "schemi/*.json", "mcp/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

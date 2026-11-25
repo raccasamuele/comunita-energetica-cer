@@ -1,0 +1,55 @@
+# Classificazione dei tipi di soggetto ai fini dei requisiti e dei contributi.
+#
+# ammissibile_socio_CER: ammesso | non_ammesso | sconosciuto
+# soggetto_esente_F: si | no | sconosciuto  — la riduzione F per contributo in capitale non si
+#   applica all'EACI dei loro punti di prelievo (RO p. 41)
+# impresa_ai_fini_eccedenza: si | no | sconosciuto — la quota eccedentaria della TIP va ai
+#   consumatori diversi dalle imprese (DM art. 3 c. 2 lett. g)
+# "sconosciuto" viene trattato in modo prudente (non esente, possibile impresa) e segnalato.
+
+versione: "2026-10-15"
+revisione: 2026-10-15
+scadenza: 2027-04-30
+fonti:
+  - "DM MASE 7 dicembre 2023 n. 414 (Decreto CACER), art. 3 e Allegato 1"
+  - "GSE, Regole Operative CACER, versione del 16 luglio 2025 (requisiti dei soci; par. 2.2.2.1.2)"
+note_verifica: "Valori prudenziali per condominio e terzo settore, ricontrollati il 25/11/2026 (docs/fonti_normative.md, Condominio ed enti del terzo settore): da far confermare all'esperto (PLAN.md, punto 22) o al GSE."
+
+soggetti:
+  persona_fisica:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: si
+    impresa_ai_fini_eccedenza: "no"
+  condominio:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: "no"
+    impresa_ai_fini_eccedenza: "no"
+    nota: "Partecipazione tramite delibera dell'assemblea condominiale. Il condominio non è nell'elenco dei soggetti esenti dal fattore F (RO p. 41): il punto delle parti comuni non è esente, quelli dei condòmini persone fisiche sì. Non è un'impresa ai fini della quota eccedentaria (ipotesi)."
+  ente_territoriale:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: si
+    impresa_ai_fini_eccedenza: "no"
+  ente_religioso:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: si
+    impresa_ai_fini_eccedenza: "no"
+  terzo_settore:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: si
+    impresa_ai_fini_eccedenza: sconosciuto
+    nota: "Gli enti del terzo settore che svolgono attività d'impresa (es. imprese sociali) vanno trattati come imprese."
+  pmi:
+    ammissibile_socio_CER: ammesso
+    soggetto_esente_F: "no"
+    impresa_ai_fini_eccedenza: si
+    nota: "Solo se la partecipazione non costituisce l'attività commerciale o industriale principale."
+  grande_impresa:
+    ammissibile_socio_CER: non_ammesso
+    soggetto_esente_F: "no"
+    impresa_ai_fini_eccedenza: si
+    nota: "Le grandi imprese non possono essere soci o membri di una CER."
+  altro:
+    ammissibile_socio_CER: sconosciuto
+    soggetto_esente_F: sconosciuto
+    impresa_ai_fini_eccedenza: sconosciuto
+    nota: "Tipo di soggetto non classificato: verificare con un professionista."

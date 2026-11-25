@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.cache/
+build/
+dist/
+node_modules/
+.env
+.env.*
+*.log
+.cloudflare/
+.verifica-ui/

@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CER</title>
+<!--
+  Scheda del simulatore CER nella chat (MCP Apps, guida: docs/GUIDA-MCP.md §5). Un solo file, senza risorse esterne:
+  il client la mostra in un riquadro isolato e le passa il risultato dello strumento con postMessage (JSON-RPC 2.0).
+  Mostra solo quello che lo strumento ha già detto all'agente: niente calcoli del motore qui, niente rete.
+  Colori e tono di DESIGN.md (stile comune con Casa, "Energia in chiaro").
+-->
+<style>
+  :root {
+    --bg: var(--color-background-primary, #ffffff);
+    --bg2: var(--color-background-secondary, #f6f5fb);
+    --fg: var(--color-text-primary, #1f1d2b);
+    --fg2: var(--color-text-secondary, #6b6880);
+    --line: var(--color-border-primary, #e4e1ee);
+    --accent: #7c3aed; --accent-text: #6230b8; --accent-soft: #f1ebff; --on-accent: #ffffff;
+    --ok: #08664e; --ok-bg: #e3f7f0;
+    --warn: #814800; --warn-bg: #fff3df;
+    --bad: #a9212a; --bad-bg: #fde8e8;
+    --info: #174db5; --info-bg: #e8f0fe;
+    /* ruoli fissi dei grafici (DESIGN.md) */
+    --condivisa: #ef6b6b; --immessa: #c9c5d8; --autoconsumo: #16a37f; --consumi: #8b5cf6; --fv: #f59e0b;
+    --serie2: #3b82f6;
+    --radius: var(--border-radius-md, 12px);
+    font-family: var(--font-sans, "Poppins", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg: var(--color-background-primary, #1d1c27);
+    --bg2: var(--color-background-secondary, #24232f);
+    --fg: var(--color-text-primary, #ecebf3);
+    --fg2: var(--color-text-secondary, #a19eb3);
+    --line: var(--color-border-primary, #3a3848);
+    --accent: #c4b5fd; --accent-text: #c4b5fd; --accent-soft: #2d2546; --on-accent: #120d21;
+    --ok: #3ccf9f; --ok-bg: #173a30;
+    --warn: #f5b34c; --warn-bg: #3a2e19;
+    --bad: #ff7a7f; --bad-bg: #3d2023;
+    --info: #7aa7ff; --info-bg: #1d2a42;
+    --condivisa: #ff8a8a; --immessa: #5a5770; --autoconsumo: #3ccf9f; --consumi: #a78bfa; --fv: #f5b34c;
+    --serie2: #7aa7ff;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: transparent; }
+  body { color: var(--fg); font-size: 14px; line-height: 1.45; }
+  .card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--fg2); font-size: 12px; flex-wrap: wrap; }
+  .marchio { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-text); font-weight: 600; }
+  .marchio svg { width: 16px; height: 16px; }
+  h1 { font-size: 17px; margin: 6px 0 12px; line-height: 1.3; font-weight: 600; }
+  h2 { font-size: 12px; margin: 18px 0 6px; color: var(--fg2); font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+  .frase { border-left: 4px solid var(--accent); background: var(--bg2); padding: 10px 12px; border-radius: 8px; }
+  .frase.warn { border-color: var(--warn); background: var(--warn-bg); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 10px; }
+  .tile { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--bg); }
+  .tile .k { font-size: 12px; color: var(--fg2); }
+  .tile .v { font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .s { font-size: 12px; color: var(--fg2); }
+  .pos { color: var(--ok); } .neg { color: var(--bad); }
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .pill.bad { background: var(--bad-bg); color: var(--bad); }
+  .pill.info { background: var(--info-bg); color: var(--info); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--fg2); font-weight: 500; font-size: 12px; }
+  th.n, td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  ul { margin: 0; padding-left: 18px; } li { margin: 2px 0; }
+  .muted { color: var(--fg2); font-size: 12px; }
+  .box { padding: 10px 12px; border-radius: 8px; margin-top: 8px; }
+  .box.bad { background: var(--bad-bg); color: var(--bad); }
+  .box.warn { background: var(--warn-bg); color: var(--warn); }
+  .box.info { background: var(--info-bg); color: var(--info); }
+  details { margin-top: 6px; }
+  details summary { cursor: pointer; color: var(--accent-text); font-size: 13px; padding: 4px 0; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 16px 0 4px; overflow-x: auto; }
+  @media (max-width: 420px) { .tabs button { padding: 8px 7px; } .card { padding: 12px; } }
+  .tabs button { background: none; color: var(--fg2); border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 8px 10px; font-weight: 500; min-height: 40px; }
+  .tabs button[aria-selected="true"] { color: var(--accent-text); border-bottom-color: var(--accent); font-weight: 600; }
+  button { font: inherit; cursor: pointer; }
+  .azione { font-weight: 600; border: 0; border-radius: 8px; padding: 8px 14px; min-height: 40px; background: var(--accent); color: var(--on-accent); }
+  .azione.sec { background: var(--bg); color: var(--accent-text); border: 1px solid var(--line); }
+  button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+  .azioni { margin-top: 14px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .copia { font-size: 12px; color: var(--fg2); background: var(--bg2); padding: 6px 8px; border-radius: 6px; width: 100%; user-select: all; }
+  .attesa { color: var(--fg2); padding: 8px 0; }
+  .piede { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .piede p { margin: 4px 0; }
+  /* intervallo minimo–massimo con la mediana */
+  .banda { position: relative; height: 8px; background: var(--bg2); border-radius: 4px; margin: 6px 0 2px; }
+  .banda .r { position: absolute; top: 0; bottom: 0; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 4px; }
+  .banda .m { position: absolute; top: -3px; width: 3px; height: 14px; background: var(--accent-text); border-radius: 2px; }
+  .banda .z { position: absolute; top: -4px; width: 1px; height: 16px; background: var(--fg2); }
+  /* opzioni della proposta */
+  .opzioni { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+  .opz { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .opz.consigliata { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .opz .nome { font-weight: 600; display: flex; justify-content: space-between; gap: 6px; align-items: baseline; }
+  .opz .kwp { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .opz .azione { margin-top: auto; }
+  /* grafici */
+  figure { margin: 8px 0 0; }
+  figcaption { font-size: 12px; color: var(--fg2); margin-bottom: 4px; }
+  svg.grafico { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.grafico text { font-size: 11px; fill: var(--fg2); font-family: inherit; }
+  svg.grafico .asse { stroke: var(--line); stroke-width: 1; }
+  svg.grafico .zero { stroke: var(--fg2); stroke-width: 1; stroke-dasharray: 3 3; }
+  svg.grafico [tabindex]:focus { outline: none; stroke: var(--fg); stroke-width: 2; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--fg2); margin-top: 4px; }
+  .legenda span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+  .lettura { min-height: 18px; font-size: 12px; color: var(--fg); font-variant-numeric: tabular-nums; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="card" id="scheda"><div class="attesa">Sto aspettando i risultati del simulatore CER…</div></div>
+<script>
+(() => {
+  "use strict";
+  const root = document.getElementById("scheda");
+  const parent = window.parent;
+  const SVG = "http://www.w3.org/2000/svg";
+  let nextId = 1;
+  const waiting = new Map();
+
+  // --- postMessage JSON-RPC verso il client ------------------------------------------------------------------
+  function send(msg) { parent.postMessage(Object.assign({ jsonrpc: "2.0" }, msg), "*"); }
+  function request(method, params) {
+    const id = nextId++;
+    send({ id, method, params: params || {} });
+    return new Promise((resolve, reject) => {
+      waiting.set(id, { resolve, reject });
+      setTimeout(() => { if (waiting.delete(id)) reject(new Error("nessuna risposta")); }, 10000);
+    });
+  }
+  const notify = (method, params) => send({ method, params: params || {} });
+
+  window.addEventListener("message", (event) => {
+    if (event.source !== parent) return;
+    const m = event.data;
+    if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && !m.method) {
+      const w = waiting.get(m.id);
+      if (!w) return;
+      waiting.delete(m.id);
+      if (m.error) w.reject(new Error(m.error.message || "errore")); else w.resolve(m.result || {});
+      return;
+    }
+    switch (m.method) {
+      case "ui/notifications/tool-input": if (!shown) root.replaceChildren(el("div", "attesa", "Il simulatore CER sta calcolando…")); break;
+      case "ui/notifications/tool-result": render(m.params || {}); break;
+      case "ui/notifications/tool-cancelled": if (!shown) root.replaceChildren(el("div", "attesa", "Calcolo annullato.")); break;
+      case "ui/notifications/host-context-changed": applyContext(m.params || {}); break;
+      case "ui/resource-teardown": if (m.id !== undefined) send({ id: m.id, result: {} }); break;
+      case "ping": if (m.id !== undefined) send({ id: m.id, result: {} }); break;
+      default: if (m.id !== undefined) send({ id: m.id, error: { code: -32601, message: "Metodo non supportato" } });
+    }
+  });
+
+  function applyContext(ctx) {
+    if (ctx.theme === "dark" || ctx.theme === "light") document.documentElement.dataset.theme = ctx.theme;
+    const vars = ctx.styles && ctx.styles.variables;
+    if (vars && typeof vars === "object") {
+      for (const [k, v] of Object.entries(vars)) if (/^--[\w-]+$/.test(k) && typeof v === "string") document.documentElement.style.setProperty(k, v);
+    }
+  }
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+
+  // --- dimensione: il client adatta l'altezza del riquadro ---------------------------------------------------
+  let lastH = 0;
+  function reportSize() {
+    const h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (h === lastH) return;
+    lastH = h;
+    notify("ui/notifications/size-changed", { width: Math.ceil(document.documentElement.scrollWidth), height: h });
+  }
+  if ("ResizeObserver" in window) new ResizeObserver(reportSize).observe(document.documentElement);
+
+  // --- mattoni -----------------------------------------------------------------------------------------------
+  // Solo textContent: i testi vengono dal progetto e non diventano mai HTML.
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+  function sv(tag, attrs, text) {
+    const n = document.createElementNS(SVG, tag);
+    for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, String(v));
+    if (text !== undefined) n.textContent = String(text);
+    return n;
+  }
+  const num = (v) => typeof v === "number" && Number.isFinite(v);
+  const fmt = (v, dec) => num(v) ? new Intl.NumberFormat("it-IT", { maximumFractionDigits: dec || 0, useGrouping: "always" }).format(v) : "n.d.";
+  const euro = (v) => num(v) ? fmt(v) + " €" : "n.d.";
+  const kwh = (v) => num(v) ? fmt(v) + " kWh" : "n.d.";
+  const segnoCls = (v) => num(v) ? (v >= 0 ? "pos" : "neg") : "";
+  const conUnita = (v, u) => u === "€" ? euro(v) : u === "kWh" ? kwh(v) : fmt(v) + (u ? " " + u : "");
+  const arr = (v) => Array.isArray(v) ? v : [];
+  const tono = (t) => ({ ok: "ok", forse: "warn", attenzione: "warn", warn: "warn", no: "bad", bad: "bad", info: "info" })[t] || "info";
+  function tile(k, v, s, cls) {
+    const t = el("div", "tile");
+    t.append(el("div", "k", k), el("div", "v " + (cls || ""), v));
+    if (s) t.append(s instanceof Node ? s : el("div", "s", s));
+    return t;
+  }
+  function h2(t) { return el("h2", null, t); }
+  function list(items) { const u = el("ul"); for (const i of items) u.append(el("li", null, i)); return u; }
+  function chiuso(titolo, ...contenuto) {
+    const det = el("details");
+    det.append(el("summary", null, titolo), ...contenuto);
+    det.addEventListener("toggle", reportSize);
+    return det;
+  }
+  /** Celle: testo, oppure { text, cls, sotto }. Colonne numeriche: indici in `numeriche`. */
+  function table(headers, rows, numeriche) {
+    const n = new Set(numeriche || []);
+    const t = el("table");
+    const h = el("tr");
+    headers.forEach((c, i) => { const th = el("th", n.has(i) ? "n" : null, c); th.scope = "col"; h.append(th); });
+    t.append(h);
+    for (const row of rows) {
+      const tr = el("tr");
+      row.forEach((cell, i) => {
+        const c = cell && typeof cell === "object" ? cell : { text: cell };
+        const td = el("td", [n.has(i) ? "n" : "", c.cls || ""].join(" ").trim() || null, c.text);
+        if (c.sotto) td.append(el("div", "muted", c.sotto));
+        tr.append(td);
+      });
+      t.append(tr);
+    }
+    return t;
+  }
+  /** Banda minimo–massimo con la mediana, su una scala comune [lo, hi]. */
+  function banda(b, lo, hi) {
+    const d = el("div", "banda");
+    if (!b || !num(b.minimo) || !num(b.massimo) || !(hi > lo)) return d;
+    const x = (v) => ((v - lo) / (hi - lo)) * 100;
+    const r = el("div", "r");
+    r.style.left = x(b.minimo) + "%";
+    r.style.width = Math.max(x(b.massimo) - x(b.minimo), 0.8) + "%";
+    d.append(r);
+    if (lo < 0 && hi > 0) { const z = el("div", "z"); z.style.left = x(0) + "%"; d.append(z); }
+    const med = num(b.mediana) ? b.mediana : b.valore;
+    if (num(med)) { const m = el("div", "m"); m.style.left = "calc(" + x(med) + "% - 1px)"; d.append(m); }
+    d.setAttribute("role", "img");
+    d.setAttribute("aria-label", "da " + fmt(b.minimo) + " a " + fmt(b.massimo) + (num(med) ? ", valore centrale " + fmt(med) : ""));
+    return d;
+  }
+  function legenda(voci) {
+    const l = el("div", "legenda");
+    for (const [nome, colore] of voci) { const s = el("span", null, nome); s.style.setProperty("--c", colore); l.append(s); }
+    return l;
+  }
+
+  // --- chiedere a Claude di continuare: ui/message, altrimenti il testo da copiare ---------------------------
+  function chiedi(testo, dove) {
+    const params = (content) => ({ role: "user", content });
+    request("ui/message", params({ type: "text", text: testo }))
+      .catch(() => request("ui/message", params([{ type: "text", text: testo }])))
+      .catch(() => {
+        if (dove.querySelector(".copia")) return;
+        dove.append(el("div", "muted", "Copia la richiesta nella chat:"), el("div", "copia", testo));
+        reportSize();
+      });
+  }
+  function azione(testo, richiesta, dove, sec) {
+    const b = el("button", "azione" + (sec ? " sec" : ""), testo);
+    b.type = "button";
+    b.addEventListener("click", () => chiedi(richiesta, dove));
+    return b;
+  }
+
+  // --- grafici SVG: valori leggibili con il mouse e con la tastiera ------------------------------------------
+  /** Scala "bella" per l'asse y. */
+  function scala(lo, hi, passi) {
+    if (!(hi > lo)) { hi = lo + 1; }
+    const grezzo = (hi - lo) / (passi || 4);
+    const p = Math.pow(10, Math.floor(Math.log10(grezzo)));
+    const passo = [1, 2, 2.5, 5, 10].map((k) => k * p).find((k) => k >= grezzo) || grezzo;
+    const a = Math.floor(lo / passo) * passo, b = Math.ceil(hi / passo) * passo;
+    const tacche = [];
+    for (let v = a; v <= b + passo / 2; v += passo) tacche.push(Math.round(v * 1e6) / 1e6);
+    return { lo: a, hi: b, tacche };
+  }
+  /** Larghezza del grafico in pixel veri: così il testo resta leggibile anche su un riquadro stretto. */
+  const larghezza = () => Math.max(280, Math.min(640, (root.clientWidth || 560) - 34));
+  const breve = (v) => Math.abs(v) >= 1000 ? fmt(v / 1000, Math.abs(v) >= 10000 ? 0 : 1) + "k" : fmt(v);
+  function telaio(W, H, s, m, didascalia) {
+    const g = sv("svg", { viewBox: `0 0 ${W} ${H}`, class: "grafico", role: "group", "aria-label": didascalia });
+    const y = (v) => m.t + (H - m.t - m.b) * (1 - (v - s.lo) / (s.hi - s.lo));
+    for (const t of s.tacche) {
+      g.append(sv("line", { x1: m.l, x2: W - m.r, y1: y(t), y2: y(t), class: t === 0 && s.lo < 0 ? "zero" : "asse" }));
+      g.append(sv("text", { x: m.l - 6, y: y(t) + 4, "text-anchor": "end" }, breve(t)));
+    }
+    return { g, y };
+  }
+  /** Rende un elemento leggibile: titolo per il mouse, focus e riga di lettura per la tastiera. */
+  function leggibile(nodo, testo, lettura) {
+    nodo.append(sv("title", {}, testo));
+    nodo.setAttribute("tabindex", "0");
+    nodo.setAttribute("aria-label", testo);
+    const mostra = () => { lettura.textContent = testo; };
+    nodo.addEventListener("mouseenter", mostra);
+    nodo.addEventListener("focus", mostra);
+  }
+  function figura(titolo, svg, lettura, extra) {
+    const f = el("figure");
+    f.append(el("figcaption", null, titolo), svg);
+    if (extra) f.append(extra);
+    f.append(lettura);
+    return f;
+  }
+
+  /** Barre impilate mese per mese. serie: [[nome, colore, valori]] */
+  function barreImpilate(etichette, serie, unita, titolo) {
+    const W = larghezza(), H = 210, m = { t: 8, r: 6, b: 22, l: 40 };
+    const tot = etichette.map((_, i) => serie.reduce((a, s) => a + (num(s[2][i]) ? s[2][i] : 0), 0));
+    const s = scala(0, Math.max(...tot, 1));
+    const { g, y } = telaio(W, H, s, m, titolo);
+    const lettura = el("div", "lettura");
+    const passo = (W - m.l - m.r) / etichette.length;
+    const bw = Math.min(passo * 0.66, 32);
+    etichette.forEach((lab, i) => {
+      const x = m.l + passo * i + (passo - bw) / 2;
+      const gr = sv("g", {});
+      let base = 0;
+      for (const [, colore, valori] of serie) {
+        const v = num(valori[i]) ? valori[i] : 0;
+        gr.append(sv("rect", { x, width: bw, y: y(base + v), height: Math.max(y(base) - y(base + v), 0), fill: colore, rx: 2 }));
+        base += v;
+      }
+      leggibile(gr, lab + ": " + serie.map(([n, , v]) => n + " " + fmt(v[i]) + " " + unita).join(", "), lettura);
+      g.append(gr);
+      g.append(sv("text", { x: x + bw / 2, y: H - 6, "text-anchor": "middle" }, lab));
+    });
+    return figura(titolo, g, lettura, legenda(serie.map(([n, c]) => [n, c])));
+  }
+
+  /** Linee su x numerico o anni. serie: [[nome, colore, valori]], opzionale banda {min, max}. */
+  function linee(xs, serie, opz) {
+    const o = opz || {};
+    const W = larghezza(), H = 210, m = { t: 10, r: 14, b: 24, l: 44 };
+    const tutti = serie.flatMap((s) => s[2]).concat(o.banda ? o.banda.min.concat(o.banda.max) : []).filter(num);
+    const s = scala(Math.min(0, ...tutti), Math.max(0, ...tutti));
+    const { g, y } = telaio(W, H, s, m, o.titolo);
+    const lettura = el("div", "lettura");
+    const x0 = Math.min(...xs), x1 = Math.max(...xs);
+    const x = (v) => m.l + (W - m.l - m.r) * (x1 > x0 ? (v - x0) / (x1 - x0) : 0.5);
+    if (o.banda) {
+      const su = xs.map((v, i) => `${x(v)},${y(o.banda.max[i])}`), giu = xs.map((v, i) => `${x(v)},${y(o.banda.min[i])}`).reverse();
+      g.append(sv("polygon", { points: su.concat(giu).join(" "), fill: o.banda.colore, opacity: 0.18 }));
+    }
+    for (const [, colore, valori] of serie) {
+      g.append(sv("polyline", { points: xs.map((v, i) => `${x(v)},${y(valori[i])}`).join(" "), fill: "none", stroke: colore, "stroke-width": 2.2, "stroke-linejoin": "round" }));
+    }
+    // etichette dell'asse x: al massimo 8
+    // Etichette dell'asse x senza sovrapposizioni: l'ultima sempre, le altre se c'è posto.
+    const posti = [];
+    for (let i = xs.length - 1; i >= 0; i--) if (posti.every((p) => Math.abs(p - x(xs[i])) >= 44)) posti.push(x(xs[i]));
+    xs.forEach((v) => { if (posti.includes(x(v))) g.append(sv("text", { x: x(v), y: H - 6, "text-anchor": "middle" }, (o.etichettaX || fmt)(v))); });
+    // punti leggibili
+    xs.forEach((v, i) => {
+      const gr = sv("g", {});
+      for (const [, colore, valori] of serie) if (num(valori[i])) gr.append(sv("circle", { cx: x(v), cy: y(valori[i]), r: o.evidenzia && o.evidenzia.includes(i) ? 5 : 3.2, fill: colore, stroke: "var(--bg)", "stroke-width": 1.5 }));
+      const extra = o.banda ? " (tra " + o.fmt(o.banda.min[i]) + " e " + o.fmt(o.banda.max[i]) + ")" : "";
+      leggibile(gr, (o.etichettaX || fmt)(v) + (o.unitaX || "") + ": " + serie.map(([n, , val]) => n + " " + o.fmt(val[i])).join(", ") + extra, lettura);
+      g.append(gr);
+    });
+    const leg = serie.length > 1 || o.banda ? legenda(serie.map(([n, c]) => [n, c]).concat(o.banda ? [[o.banda.nome, "var(--accent-soft)"]] : [])) : null;
+    return figura(o.titolo, g, lettura, leg);
+  }
+
+  /** Barre orizzontali di sensibilità attorno al valore base. */
+  function tornado(sens) {
+    const voci = arr(sens.voci).filter((v) => num(v.basso) && num(v.alto));
+    if (!voci.length || !num(sens.base)) return null;
+    const W = larghezza(), stretto = W < 460;
+    // Su un riquadro stretto il nome va sopra la barra, altrimenti a sinistra.
+    const rh = stretto ? 40 : 30, m = { t: 6, r: 14, b: 20, l: stretto ? 14 : 190 };
+    const H = m.t + m.b + rh * voci.length;
+    const vals = voci.flatMap((v) => [v.basso, v.alto]).concat([sens.base, 0]);
+    const s = scala(Math.min(...vals), Math.max(...vals), 5);
+    const x = (v) => m.l + (W - m.l - m.r) * (v - s.lo) / (s.hi - s.lo);
+    const g = sv("svg", { viewBox: `0 0 ${W} ${H}`, class: "grafico", role: "group", "aria-label": "Sensibilità del beneficio netto" });
+    const lettura = el("div", "lettura");
+    for (const t of s.tacche) {
+      g.append(sv("line", { x1: x(t), x2: x(t), y1: m.t, y2: H - m.b, class: t === 0 ? "zero" : "asse" }));
+      g.append(sv("text", { x: x(t), y: H - 6, "text-anchor": "middle" }, breve(t)));
+    }
+    voci.forEach((v, i) => {
+      const yy = m.t + rh * i;
+      const nome = v.parametro.length > 30 && !stretto ? v.parametro.slice(0, 29) + "…" : v.parametro;
+      g.append(stretto ? sv("text", { x: m.l, y: yy + 12 }, nome + " (" + v.variazione + ")") : sv("text", { x: m.l - 8, y: yy + rh / 2 + 4, "text-anchor": "end" }, nome));
+      const gr = sv("g", {});
+      const a = Math.min(v.basso, v.alto), b = Math.max(v.basso, v.alto);
+      gr.append(sv("rect", { x: x(a), width: Math.max(x(b) - x(a), 1), y: yy + (stretto ? 17 : 6), height: stretto ? 16 : rh - 12, fill: "var(--consumi)", opacity: 0.75, rx: 3 }));
+      leggibile(gr, v.parametro + " (" + v.variazione + "): " + euro(v.basso) + " con il valore basso, " + euro(v.alto) + " con quello alto", lettura);
+      g.append(gr);
+    });
+    g.append(sv("line", { x1: x(sens.base), x2: x(sens.base), y1: m.t, y2: H - m.b, stroke: "var(--fg)", "stroke-width": 1.5 }));
+    return figura("Quanto cambia il beneficio netto (scenario base " + euro(sens.base) + ") se cambia un'ipotesi alla volta", g, lettura);
+  }
+
+  // --- lettura del risultato ---------------------------------------------------------------------------------
+  let shown = false;
+  function datiDa(result) {
+    if (result.structuredContent && typeof result.structuredContent === "object") return result.structuredContent;
+    // Client con protocollo vecchio: il JSON è il secondo testo.
+    const testi = arr(result.content).filter((c) => c && c.type === "text");
+    for (const t of testi.slice(1)) { try { return JSON.parse(t.text); } catch (e) { /* non JSON */ } }
+    return { testo: testi[0] ? testi[0].text : "" };
+  }
+  const marchio = () => {
+    const m = el("span", "marchio");
+    const ic = sv("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": 2, "aria-hidden": "true" });
+    ic.append(sv("circle", { cx: 12, cy: 12, r: 4 }), sv("path", { d: "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" }));
+    m.append(ic, document.createTextNode("Simulatore CER"));
+    return m;
+  };
+  function testata(d, destra) {
+    const top = el("div", "top");
+    top.append(marchio());
+    const r = el("span");
+    if (destra) r.append(destra);
+    if (d.motore) r.append(document.createTextNode(" motore " + d.motore));
+    top.append(r);
+    return top;
+  }
+  function pillQualita(q) {
+    if (!q) return null;
+    const lettera = typeof q === "string" ? q : q.lettera;
+    if (!lettera) return null;
+    const p = el("span", "pill " + (lettera === "A" ? "ok" : lettera === "B" ? "info" : "warn"), "Qualità " + lettera);
+    if (q.spiegazione) p.title = q.spiegazione;
+    return p;
+  }
+  function piede(d) {
+    const p = el("div", "piede");
+    const fonti = [];
+    if (arr(d.fonti_prezzi).length) fonti.push("Prezzi: " + d.fonti_prezzi.join(", ") + ".");
+    if (d.pvgis && d.pvgis.frase) fonti.push(d.pvgis.frase);
+    if (d.nota_intervalli) fonti.push(d.nota_intervalli);
+    if (fonti.length) p.append(el("p", "muted", fonti.join(" ")));
+    if (arr(d.avvertenze).length) p.append(el("p", "muted", d.avvertenze.join(" ")));
+    if (d.avvertenza) p.append(el("p", "muted", d.avvertenza));
+    return p.childNodes.length ? p : null;
+  }
+
+  // --- viste per strumento -----------------------------------------------------------------------------------
+  function vistaErrore(d, result) {
+    const out = [testata(d), el("h1", null, "Il simulatore non ha potuto rispondere")];
+    const box = el("div", "box bad");
+    const errori = arr(d.errori).length ? d.errori : [d.errore || d.testo || "Errore sconosciuto."];
+    box.append(list(errori.map(String)));
+    out.push(box);
+    if (arr(d.non_supportati).length) out.push(h2("Non supportato"), list(d.non_supportati));
+    return out;
+  }
+
+  function vistaProgetto(d) {
+    const r = d.riepilogo || {};
+    const tipo = d.tipo === "CER" ? "Comunità energetica" : "Gruppo di autoconsumatori";
+    const out = [testata(d, el("span", null, d.progetto_id || "")), el("h1", null, tipo + (d.regione ? " · " + d.regione : ""))];
+    const tiles = el("div", "tiles");
+    tiles.append(tile("Membri", fmt(r.membri)), tile("Contatori", fmt(r.contatori)), tile("Consumi all'anno", kwh(r.kwh_annui), num(r.famiglie_tipo) && r.famiglie_tipo ? r.famiglie_tipo + " con la famiglia tipo" : null));
+    const q = r.qualita_consumi;
+    if (q) {
+      const s = el("div", "s");
+      for (const k of ["A", "B", "C"]) if (q[k]) { const p = el("span", "pill " + (k === "A" ? "ok" : k === "B" ? "info" : "warn"), q[k] + " " + k); p.style.marginRight = "4px"; s.append(p); }
+      tiles.append(tile("Qualità dei consumi", "", s));
+    }
+    out.push(tiles);
+    if (d.manca_quota_membri) out.push(el("div", "box warn", "Manca la quota dei contributi ai membri: senza, lo scenario non si calcola."));
+    if (arr(d.non_supportati).length) { const b = el("div", "box bad"); b.append(el("div", null, "Non supportato dal simulatore:"), list(d.non_supportati)); out.push(b); }
+    out.push(h2("Impianti"));
+    const az = el("div", "azioni");
+    if (arr(d.impianti).length) {
+      out.push(table(["Impianto", "Contatore", "Potenza", "Chi investe"], d.impianti.map((i) => [{ text: i.nome || i.id, sotto: i.nome && i.nome !== i.id ? i.id : "" }, i.punto, num(i.kwp) ? fmt(i.kwp, 1) + " kWp" : "n.d.", i.investitore || ""]), [2]));
+      if (d.progetto_id && !d.manca_quota_membri) az.append(azione("Calcola lo scenario", "Calcola lo scenario del progetto " + d.progetto_id + " con analizza_scenario.", az));
+    } else {
+      out.push(el("p", "muted", "Nessun impianto: il simulatore può proporne uno per il tetto (superficie, inclinazione, orientamento)."));
+      if (d.progetto_id) az.append(azione("Proponi un impianto", "Proponi un impianto fotovoltaico per il progetto " + d.progetto_id + " con proponi_impianto: chiedimi prima i dati del tetto che mancano.", az));
+    }
+    if (arr(d.contatori).length) out.push(chiuso("Contatori (" + d.contatori.length + ")", table(["Contatore", "Membro", "Ruolo"], d.contatori.map((c) => [c.punto, c.membro, c.ruolo]))));
+    if (arr(d.da_verificare).length) out.push(h2("Da verificare fuori dal simulatore"), list(d.da_verificare));
+    if (az.childNodes.length) out.push(az);
+    return out;
+  }
+
+  function vistaProposta(d) {
+    const out = [testata(d, pillQualita(d.qualita)), el("h1", null, "Tre taglie per il tetto")];
+    const opz = arr(d.opzioni);
+    const tutti = opz.flatMap((o) => [o.van_minimo, o.van_massimo]).concat([0]).filter(num);
+    const lo = Math.min(...tutti), hi = Math.max(...tutti);
+    const griglia = el("div", "opzioni");
+    opz.forEach((o, i) => {
+      const consigliata = /consigliat/i.test(o.nome || "") || (opz.length === 3 && i === 1 && !opz.some((x) => /consigliat/i.test(x.nome || "")));
+      const c = el("div", "opz" + (consigliata ? " consigliata" : ""));
+      const nome = el("div", "nome");
+      nome.append(el("span", null, o.nome), el("span", "muted", euro(o.costo)));
+      c.append(nome, el("div", "kwp", fmt(o.kwp, 1) + " kWp"));
+      c.append(el("div", "muted", "Beneficio netto in 25 anni"), el("div", null, euro(o.van_minimo) + " … " + euro(o.van_massimo)), banda({ minimo: o.van_minimo, mediana: o.van_mediana, massimo: o.van_massimo }, lo, hi));
+      c.append(el("div", "muted", "Valore centrale " + euro(o.van_mediana) + " · ai membri " + euro(o.euro_anno_membri) + " all'anno"));
+      if (o.commento) c.append(el("div", "muted", o.commento));
+      if (o.progetto_id) c.append(azione("Analizza questa taglia", "Analizza lo scenario completo del progetto " + o.progetto_id + " (taglia " + o.nome + ", " + fmt(o.kwp, 1) + " kWp) con analizza_scenario.", c, !consigliata));
+      griglia.append(c);
+    });
+    out.push(griglia);
+    if (d.nessuna_conviene) out.push(el("div", "box warn", "Nessuna taglia conviene in tutti gli scenari."));
+    if (d.quota_provvisoria && num(d.quota_membri)) out.push(el("div", "box info", "Quota dei contributi ai membri non scelta: calcolata con il " + fmt(d.quota_membri * 100) + "% provvisorio."));
+    const curva = arr(d.curva).filter((p) => num(p.kwp));
+    if (curva.length > 2) {
+      const evid = curva.map((p, i) => opz.some((o) => Math.abs(o.kwp - p.kwp) < 0.05) ? i : -1).filter((i) => i >= 0);
+      out.push(h2("Beneficio per taglia"), linee(curva.map((p) => p.kwp), [["Valore centrale", "var(--accent)", curva.map((p) => p.mediana)]], {
+        titolo: "Beneficio netto della configurazione su 25 anni, per potenza dell'impianto", fmt: euro, etichettaX: (v) => fmt(v, 1), unitaX: " kWp", evidenzia: evid,
+        banda: { nome: "Tra il minimo e il massimo degli scenari", colore: "var(--accent)", min: curva.map((p) => p.minimo), max: curva.map((p) => p.massimo) },
+      }));
+    }
+    if (arr(d.note).length) out.push(h2("Note"), list(d.note));
+    return out;
+  }
+
+  function vistaScenario(d) {
+    const out = [testata(d, pillQualita(d.qualita))];
+    out.push(el("h1", null, "Risultati dello scenario"));
+    const frase = el("div", "frase" + (d.qualita && d.qualita.lettera === "C" ? " warn" : ""), d.frase || "");
+    if (d.qualita && d.qualita.spiegazione) frase.append(el("div", "muted", d.qualita.testo + ": " + d.qualita.spiegazione + "."));
+    out.push(frase);
+    if (d.economia_disabilitata) out.push(el("div", "box warn", "Conti economici non calcolati: " + d.economia_disabilitata));
+
+    const cifre = arr(d.cifre);
+    if (cifre.length) {
+      const tiles = el("div", "tiles");
+      for (const c of cifre) {
+        const s = el("div", "s");
+        // La banda ha senso dove conta il segno: il beneficio netto, sulla scala che comprende lo zero.
+        if (c.unita === "€" && /netto/i.test(c.voce) && num(c.minimo) && num(c.massimo)) s.append(banda({ minimo: c.minimo, massimo: c.massimo, valore: c.valore }, Math.min(0, c.minimo), Math.max(0, c.massimo)));
+        s.append(el("div", null, "tra " + conUnita(c.minimo, c.unita) + " e " + conUnita(c.massimo, c.unita)));
+        const t = tile(c.voce, conUnita(c.valore, c.unita), s, c.unita === "€" && /netto/i.test(c.voce) ? segnoCls(c.valore) : "");
+        if (c.significato) t.title = c.significato;
+        tiles.append(t);
+      }
+      out.push(tiles);
+    }
+
+    // schede
+    const pannelli = [];
+    const sintesi = [];
+    if (d.confronto) {
+      const righe = arr(d.confronto.righe);
+      const tutti = righe.flatMap((r) => r.banda ? [r.banda.minimo, r.banda.massimo] : []).concat([0]).filter(num);
+      const lo = Math.min(...tutti), hi = Math.max(...tutti);
+      sintesi.push(h2("Conviene costituire la configurazione?"), el("p", null, d.confronto.frase || ""));
+      const t = el("table");
+      for (const r of righe) {
+        const tr = el("tr");
+        const a = el("td", null, r.voce);
+        if (r.descrizione) a.append(el("div", "muted", r.descrizione));
+        const b = el("td");
+        b.style.width = "45%";
+        if (r.banda) b.append(el("div", "muted", euro(r.banda.minimo) + " … " + euro(r.banda.massimo)), banda(r.banda, lo, hi));
+        else b.append(el("div", "muted", "0 €"));
+        tr.append(a, b);
+        t.append(tr);
+      }
+      sintesi.push(t);
+    }
+    if (arr(d.per_membro).length) {
+      sintesi.push(h2("Netto all'anno per membro"), table(["Membro", "€ all'anno"], d.per_membro.map((m) => [m.membro, { text: euro(m.netto), cls: segnoCls(m.netto) }]), [1]));
+    }
+    if (sintesi.length) pannelli.push(["Sintesi", sintesi]);
+
+    const energia = [];
+    if (d.mensile && arr(d.mensile.righe).length) {
+      const col = arr(d.mensile.colonne), righe = d.mensile.righe;
+      const colori = ["var(--condivisa)", "var(--immessa)", "var(--autoconsumo)"];
+      const serie = col.slice(1).map((nome, j) => [nome.replace(/\s*\(kWh\)/, ""), colori[j] || "var(--consumi)", righe.map((r) => r[j + 1])]);
+      energia.push(barreImpilate(righe.map((r) => r[0]), serie, "kWh", "Energia mese per mese, primo anno intero"));
+      energia.push(chiuso("Vedi i numeri", table(col, righe.map((r) => [r[0], ...r.slice(1).map((v) => fmt(v))]), col.slice(1).map((_, i) => i + 1))));
+    }
+    if (energia.length) pannelli.push(["Energia", energia]);
+
+    const soldi = [];
+    if (d.cassa && arr(d.cassa.righe).length) {
+      const col = arr(d.cassa.colonne), righe = d.cassa.righe;
+      const colori = ["var(--accent)", "var(--fv)"];
+      soldi.push(linee(righe.map((r) => r[0]), col.slice(1).map((n, j) => [n, colori[j] || "var(--serie2)", righe.map((r) => r[j + 1])]), {
+        titolo: "Cassa cumulata anno per anno (dove la linea passa lo zero, l'investimento è rientrato)", fmt: euro, etichettaX: (v) => String(Math.round(v)),
+      }));
+    }
+    if (d.sensibilita) { const t = tornado(d.sensibilita); if (t) soldi.push(t); }
+    if (d.chi_riceve && arr(d.chi_riceve.righe).length) {
+      const col = arr(d.chi_riceve.colonne);
+      soldi.push(chiuso("Chi paga e chi riceve nel " + (d.chi_riceve.anno || "primo anno"), table(col, d.chi_riceve.righe.map((r) => r.map((v, i) => i === r.length - 1 ? euro(v) : v)), [col.length - 1])));
+    }
+    if (soldi.length) pannelli.push(["Soldi", soldi]);
+
+    const req = [];
+    if (arr(d.requisiti).length) {
+      const t = el("table");
+      for (const q of d.requisiti) {
+        const tr = el("tr");
+        const a = el("td", null, q.nome);
+        a.append(el("div", "muted", q.motivo || ""));
+        const b = el("td", "n");
+        b.append(el("span", "pill " + tono(q.tono), q.stato));
+        tr.append(a, b);
+        t.append(tr);
+      }
+      req.push(h2("Requisiti"), t);
+    }
+    if (arr(d.da_verificare).length) req.push(h2("Da verificare fuori dal simulatore"), list(d.da_verificare));
+    if (arr(d.non_supportati).length) req.push(h2("Non supportato"), list(d.non_supportati));
+    if (req.length) pannelli.push(["Requisiti", req]);
+
+    const prec = d.precisione;
+    if (prec && arr(prec.voci).length) {
+      pannelli.push(["Precisione", [el("p", null, prec.frase || ""), table(["Che cosa manca", "Perché conta"], prec.voci.map((v) => [v.cosa, v.perche]))]]);
+    }
+
+    if (pannelli.length) out.push(...schede(pannelli));
+
+    const az = el("div", "azioni");
+    if (d.analisi_id) {
+      if (arr(d.impianti).length) az.append(azione("Curva delle taglie", "Calcola la curva delle taglie per l'analisi " + d.analisi_id + " con dimensiona_impianto.", az, true));
+      az.append(azione("Salva il report PDF", "Salva il report PDF dell'analisi " + d.analisi_id + " con scrivi_report: chiedimi in quale cartella.", az, true));
+    }
+    if (az.childNodes.length) out.push(az);
+    return out;
+  }
+
+  function schede(pannelli) {
+    const barra = el("div", "tabs");
+    barra.setAttribute("role", "tablist");
+    const contenitore = el("div");
+    const bottoni = [];
+    const corpi = [];
+    pannelli.forEach(([nome, nodi], i) => {
+      const b = el("button", null, nome);
+      b.type = "button";
+      b.id = "tab-" + i;
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-controls", "pan-" + i);
+      const p = el("div");
+      p.id = "pan-" + i;
+      p.setAttribute("role", "tabpanel");
+      p.setAttribute("aria-labelledby", b.id);
+      p.append(...nodi);
+      bottoni.push(b);
+      corpi.push(p);
+      barra.append(b);
+      contenitore.append(p);
+    });
+    function apri(i, focus) {
+      bottoni.forEach((b, j) => { b.setAttribute("aria-selected", String(i === j)); b.tabIndex = i === j ? 0 : -1; corpi[j].hidden = i !== j; });
+      if (focus) bottoni[i].focus();
+      reportSize();
+    }
+    bottoni.forEach((b, i) => {
+      b.addEventListener("click", () => apri(i));
+      b.addEventListener("keydown", (e) => {
+        const n = bottoni.length;
+        if (e.key === "ArrowRight") { e.preventDefault(); apri((i + 1) % n, true); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); apri((i - 1 + n) % n, true); }
+      });
+    });
+    apri(0);
+    return [barra, contenitore];
+  }
+
+  function vistaTaglie(d) {
+    const out = [testata(d, el("span", null, d.analisi_id || "")), el("h1", null, "Curva delle taglie" + (d.impianto ? " · " + d.impianto : ""))];
+    if (d.dicitura) out.push(el("div", "frase" + (/qualit. c/i.test(d.dicitura) ? " warn" : ""), d.dicitura));
+    const curva = arr(d.curva).filter((p) => num(p.kwp));
+    if (curva.length) {
+      const migliore = curva.reduce((a, p) => (num(p.configurazione) && (!a || p.configurazione > a.configurazione) ? p : a), null);
+      out.push(linee(curva.map((p) => p.kwp), [["Configurazione", "var(--accent)", curva.map((p) => p.configurazione)], ["Chi investe", "var(--fv)", curva.map((p) => p.investitore)]], {
+        titolo: "Beneficio netto mediano su 25 anni per potenza dell'impianto", fmt: euro, etichettaX: (v) => fmt(v, 1), unitaX: " kWp",
+      }));
+      if (migliore) out.push(el("p", "muted", "Fra le taglie calcolate, il beneficio della configurazione è più alto con " + fmt(migliore.kwp, 1) + " kWp (" + euro(migliore.configurazione) + "). Non è una taglia consigliata: guarda anche il costo e gli intervalli."));
+      out.push(chiuso("Vedi i numeri", table(["kWp", "Configurazione", "Chi investe"], curva.map((p) => [fmt(p.kwp, 1), euro(p.configurazione), euro(p.investitore)]), [0, 1, 2])));
+    }
+    return out;
+  }
+
+  function vistaConsumi(d) {
+    const out = [testata(d, el("span", null, d.consumi_id || "")), el("h1", null, "Consumi letti")];
+    if (d.scegli_scenario) {
+      out.push(el("div", "box info", "È un profilo energetico di Casa: scegli lo scenario da usare."));
+      const sc = arr(d.scenari);
+      if (sc.length) out.push(list(sc.map((s) => typeof s === "string" ? s : (s.nome || s.id || JSON.stringify(s)))));
+      return out;
+    }
+    const tiles = el("div", "tiles");
+    tiles.append(tile("Consumi all'anno", kwh(d.kwh_annui)), tile("Natura", d.calcolata ? "calcolati" : (d.natura || "misurati")));
+    if (num(d.giorni)) tiles.append(tile("Giorni di dati", fmt(d.giorni)));
+    out.push(tiles);
+    if (d.descrizione) out.push(el("p", "muted", d.descrizione));
+    if (arr(d.avvisi).length) out.push(h2("Avvisi"), list(d.avvisi));
+    return out;
+  }
+
+  function vistaPrezzi(d) {
+    return [testata(d, el("span", null, d.prezzi_id || "")), el("h1", null, "Prezzi orari letti"),
+      table(["Anno", "Zona", "Fonte", "Media"], arr(d.anni).map((a) => [a.anno, a.zona, a.fonte, num(a.media_eur_mwh) ? fmt(a.media_eur_mwh, 1) + " €/MWh" : "n.d."]), [3]),
+      el("p", "muted", "I valori orari restano su questo computer."),
+      ...(arr(d.errori).length ? [h2("Scartati"), list(d.errori)] : [])];
+  }
+
+  function vistaReport(d) {
+    const box = el("div", "frase", "Report " + String(d.formato || "").toUpperCase() + " salvato");
+    box.append(el("div", "muted", d.percorso || ""));
+    return [testata(d, el("span", null, d.analisi_id || "")), el("h1", null, "Report pronto"), box,
+      el("p", "muted", "Contiene i dati del progetto, anche nomi e indirizzo se ci sono.")];
+  }
+
+  function vistaValori(d) {
+    const e = d.economia || {}, imp = d.impianti || {};
+    const out = [testata(d), el("h1", null, "Valori predefiniti · " + (e.tipo === "CER" ? "comunità energetica" : "gruppo di autoconsumatori"))];
+    const tiles = el("div", "tiles");
+    tiles.append(tile("Famiglia tipo", kwh(d.kwh_famiglia_tipo), "all'anno"), tile("Contatori", "fino a " + fmt(d.max_contatori)));
+    if (num(e.costo_evitabile_eur_kwh)) tiles.append(tile("Costo evitabile", fmt(e.costo_evitabile_eur_kwh, 3) + " €/kWh", "in bolletta"));
+    if (num(e.gestione_eur_anno)) tiles.append(tile("Gestione", euro(e.gestione_eur_anno), "all'anno"));
+    if (num(e.costituzione_eur)) tiles.append(tile("Costituzione", euro(e.costituzione_eur)));
+    out.push(tiles);
+    if (imp.termine_tip) out.push(el("p", "muted", "Termine per l'entrata in esercizio con la tariffa premio: " + imp.termine_tip + "."));
+    if (arr(d.tipi_soggetto).length) out.push(chiuso("Tipi di soggetto", list(d.tipi_soggetto)));
+    if (arr(d.tipologie_consumo).length) out.push(chiuso("Tipologie di consumo", list(d.tipologie_consumo)));
+    return out;
+  }
+
+  function render(result) {
+    shown = true;
+    const d = datiDa(result);
+    let out;
+    if (result.isError || d.ok === false) out = vistaErrore(d, result);
+    else if (arr(d.cifre).length || d.mensile || d.requisiti) out = vistaScenario(d);
+    else if (arr(d.opzioni).length) out = vistaProposta(d);
+    else if (d.analisi_id && arr(d.curva).length) out = vistaTaglie(d);
+    else if (d.riepilogo) out = vistaProgetto(d);
+    else if (d.consumi_id || d.scegli_scenario) out = vistaConsumi(d);
+    else if (d.prezzi_id) out = vistaPrezzi(d);
+    else if (d.percorso && d.formato) out = vistaReport(d);
+    else if (d.regioni || d.economia) out = vistaValori(d);
+    else out = [testata(d), el("p", null, d.testo || "Risultato pronto: i dettagli sono nella risposta di Claude.")];
+    const p = piede(d);
+    if (p) out.push(p);
+    root.replaceChildren(...out.filter(Boolean));
+    reportSize();
+  }
+
+  // --- avvio: ui/initialize, poi ui/notifications/initialized ----------------------------------------------------
+  request("ui/initialize", {
+    protocolVersion: "2026-01-26",
+    appInfo: { name: "cer-scheda", version: "1" },
+    appCapabilities: { availableDisplayModes: ["inline"] },
+  }).then((r) => {
+    if (r && r.hostContext) applyContext(r.hostContext);
+  }).catch(() => { /* client senza risposta: si prova comunque */ }).then(() => {
+    notify("ui/notifications/initialized", {});
+    reportSize();
+  });
+})();
+</script>
+</body>
+</html>

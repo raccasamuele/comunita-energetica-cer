@@ -1,0 +1,343 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cer.raccasamuele.it/schemi/esito-cer.v1.schema.json",
+  "title": "Esito dell'analisi CER",
+  "description": "Il risultato di `cersim analizza`: lo stesso del passo Risultati del sito, con l'intestazione. Gli euro sono valori reali; gli intervalli vengono dagli scenari di meteo e prezzi. Scenario preliminare, non uno studio di fattibilità.",
+  "type": "object",
+  "required": [
+    "formato",
+    "versione",
+    "motore",
+    "ok"
+  ],
+  "properties": {
+    "formato": {
+      "const": "esito-cer"
+    },
+    "versione": {
+      "const": 1,
+      "description": "Versione del formato dell'esito."
+    },
+    "motore": {
+      "type": "string",
+      "description": "Versione di cersim che ha calcolato."
+    },
+    "contratto": {
+      "type": "integer",
+      "description": "Versione del contratto dei messaggi con il sito."
+    },
+    "calcolato_il": {
+      "type": "string",
+      "format": "date"
+    },
+    "progetto": {
+      "type": "object",
+      "description": "Riassunto del progetto analizzato.",
+      "properties": {
+        "nome": {
+          "type": "string"
+        },
+        "tipo": {
+          "enum": [
+            "CER",
+            "gruppo"
+          ]
+        },
+        "membri": {
+          "type": "integer"
+        },
+        "contatori": {
+          "type": "integer"
+        },
+        "impianti": {
+          "type": "integer"
+        }
+      }
+    },
+    "ok": {
+      "type": "boolean",
+      "description": "true se l'analisi è completa. Con false si legge `errore` oppure `non_supportati`."
+    },
+    "errore": {
+      "type": "string",
+      "description": "Perché l'analisi non si è fatta (dati non validi, riparto mancante, bilanci incoerenti)."
+    },
+    "non_supportati": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Casi che il motore non sa calcolare: con questi ok è false."
+    },
+    "da_verificare": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Requisiti che il motore non può controllare dai dati."
+    },
+    "economia_disabilitata": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Se c'è, l'analisi economica è spenta (per esempio parametri normativi scaduti) e restano i soli dati di energia."
+    },
+    "qualita": {
+      "type": "object",
+      "description": "Qualità complessiva dei dati: A (misure e PVGIS), B, C (stime).",
+      "properties": {
+        "lettera": {
+          "enum": [
+            "A",
+            "B",
+            "C"
+          ]
+        },
+        "testo": {
+          "type": "string"
+        },
+        "tono": {
+          "type": "string"
+        },
+        "spiegazione": {
+          "type": "string"
+        }
+      }
+    },
+    "fonti_pv": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Da dove viene la produzione: \"PVGIS\" o \"sintetico\" (modello semplificato, qualità C)."
+    },
+    "fonti_prezzi": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "impianti": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "bande": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "description": "Intervallo sugli scenari: minimo, mediana, massimo.",
+        "properties": {
+          "minimo": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "mediana": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "massimo": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "minimo",
+          "mediana",
+          "massimo"
+        ]
+      },
+      "description": "Indicatori principali come intervalli sugli scenari, per nome."
+    },
+    "cifre": {
+      "type": "array",
+      "description": "Le cifre principali, con unità e spiegazione.",
+      "items": {
+        "type": "object",
+        "required": [
+          "voce",
+          "valore",
+          "unita"
+        ],
+        "properties": {
+          "voce": {
+            "type": "string"
+          },
+          "valore": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "minimo": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "massimo": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "unita": {
+            "type": "string"
+          },
+          "significato": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "per_membro": {
+      "type": "array",
+      "description": "Beneficio netto all'anno per membro, in €.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "membro": {
+            "type": "string"
+          },
+          "netto": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "requisiti": {
+      "type": "array",
+      "description": "Requisiti normativi e il loro stato.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "stato": {
+            "type": "string"
+          },
+          "tono": {
+            "type": "string"
+          },
+          "motivo": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "avvertenze": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Avvertenze da leggere insieme ai numeri."
+    },
+    "precisione": {
+      "type": "object",
+      "description": "Che cosa migliorare per un risultato più preciso.",
+      "properties": {
+        "frase": {
+          "type": "string"
+        },
+        "voci": {
+          "type": "array"
+        }
+      }
+    },
+    "sensibilita": {
+      "type": "object",
+      "description": "VAN della configurazione al variare dei parametri."
+    },
+    "cassa": {
+      "type": "object",
+      "properties": {
+        "colonne": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "righe": {
+          "type": "array",
+          "items": {
+            "type": "array"
+          }
+        }
+      },
+      "required": [
+        "colonne",
+        "righe"
+      ],
+      "description": "Cassa cumulata per anno."
+    },
+    "chi_riceve": {
+      "type": "object",
+      "description": "Chi riceve che cosa nell'anno rappresentativo."
+    },
+    "confronto": {
+      "type": "object",
+      "description": "Confronto con lo stesso impianto senza configurazione."
+    },
+    "frase": {
+      "type": "array",
+      "description": "Campo di presentazione: può cambiare forma senza cambiare versione."
+    },
+    "nota_intervalli": {
+      "type": "string",
+      "description": "Campo di presentazione: può cambiare forma senza cambiare versione."
+    },
+    "giorno_tipo": {
+      "type": "object",
+      "description": "Campo di presentazione: può cambiare forma senza cambiare versione."
+    },
+    "mensile": {
+      "type": "object",
+      "properties": {
+        "colonne": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "righe": {
+          "type": "array",
+          "items": {
+            "type": "array"
+          }
+        }
+      },
+      "required": [
+        "colonne",
+        "righe"
+      ],
+      "description": "Campo di presentazione: può cambiare forma senza cambiare versione."
+    },
+    "colori": {
+      "type": "object",
+      "description": "Campo di presentazione: può cambiare forma senza cambiare versione."
+    }
+  }
+}

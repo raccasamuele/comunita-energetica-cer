@@ -1,0 +1,256 @@
+/* Aggiunte della CER allo stile di Casa (casa.css, copia da risincronizzare con npm run sincronizza-stile).
+   Qui solo ciò che Casa non ha: i ruoli dei grafici dell'energia e pochi elementi della CER. */
+:root {
+  --fv: var(--s3);          /* produzione fotovoltaica */
+  --consumi: var(--s1);     /* consumi dei membri */
+  --autoconsumo: var(--s2); /* autoconsumo fisico */
+  --condivisa: var(--s4);   /* energia condivisa */
+  --immessa: var(--line);   /* immessa e non condivisa */
+}
+
+.shell { align-content: start; } /* su telefono, con una pagina corta, le righe della griglia non si allargano */
+/* il titolo comune con Casa, sopra il nome del simulatore (PRODUCT.md) */
+.famiglia { display: block; color: var(--accent-text); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 2px; }
+.logo-mark { display: inline-flex; align-items: center; justify-content: center; }
+.placeholder { border: 1px dashed var(--control-line); border-radius: var(--radius-sm); padding: 16px 18px; color: var(--muted); }
+.placeholder ul { margin: 8px 0 0; padding-left: 18px; }
+.stato-motore { display: flex; align-items: center; gap: 8px; }
+.kpi .v small { font-size: 0.8rem; font-weight: 500; color: var(--muted); }
+
+/* Passi 1 e 2: scelta del tipo di configurazione, ricerca dell'indirizzo, tabella dei contatori */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.field input[type="date"] { width: 100%; padding: 8px 12px; border: 1px solid var(--control-line); border-radius: 10px; background: var(--surface-2); min-width: 0; }
+.field input[type="file"] { min-height: 44px; padding: 8px 0; }
+.scelte { border: 0; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 12px; }
+.scelte legend { font-size: 0.8rem; color: var(--muted); font-weight: 500; margin-bottom: 6px; padding: 0; }
+.scelta { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--control-line); border-radius: var(--radius-sm); cursor: pointer; background: var(--surface); }
+.scelta:has(input:checked) { border-color: var(--accent-strong); background: var(--accent-soft); }
+.scelta:has(input:focus-visible) { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.scelta input { accent-color: var(--accent); width: 16px; height: 16px; margin-top: 3px; flex: none; }
+.scelta > span { display: flex; flex-direction: column; gap: 2px; }
+.cerca { display: flex; gap: 10px; align-items: flex-start; }
+.cerca .field { flex: 1; }
+.cerca .btn { margin-top: 21px; }
+.posizione { margin-top: 14px; }
+.toolbar.aggiungi { align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; }
+.toolbar.aggiungi .field { width: 11rem; }
+table.contatori th, table.contatori td { vertical-align: top; text-align: left; }
+table.contatori thead th { white-space: nowrap; vertical-align: bottom; }
+table.contatori input[type="text"] { min-width: 9rem; }
+table.contatori .num-input input { min-width: 6.5rem; }
+table.contatori select { min-width: 9rem; }
+.notice ul, .elenco { margin: 4px 0 0; padding-left: 18px; }
+.notice > .btn.icon { margin-left: auto; }
+ul.curve { list-style: none; padding: 0; margin: 12px 0 4px; display: flex; flex-direction: column; gap: 8px; }
+ul.curve li { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: var(--radius-sm); background: var(--surface-2); }
+ul.curve li .azioni { display: flex; gap: 6px; flex-shrink: 0; }
+@media (max-width: 560px) { ul.curve li { flex-direction: column; align-items: flex-start; } }
+.profilo-scelta { margin: 12px 0; display: flex; flex-direction: column; gap: 12px; }
+button.link { border: 0; background: none; padding: 0; color: var(--accent-text); text-decoration: underline; cursor: pointer; font: inherit; }
+.sintesi { max-width: 72ch; }
+@media (max-width: 560px) {
+  .cerca { flex-direction: column; align-items: stretch; }
+  .cerca .btn { margin-top: 0; }
+}
+
+/* La scheda dei consumi per le famiglie (?modulo=famiglia): una colonna, leggibile da telefono */
+.scheda .scheda-testa { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.scheda .scheda-testa .logo-mark { width: 44px; height: 44px; flex: none; }
+.scheda .scheda-testa h1 { margin: 4px 0 6px; }
+.scheda .scheda-testa h1:focus { outline: none; }
+.scheda h2 { font-size: 1.1rem; margin-bottom: 10px; }
+ul.guida { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-direction: column; gap: 10px; max-width: 72ch; }
+ul.guida li { display: flex; flex-direction: column; gap: 2px; }
+ul.guida li span { color: var(--muted); font-size: 0.88rem; }
+fieldset.contatore { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px 14px 14px; margin: 16px 0 0; }
+fieldset.contatore legend { font-weight: 600; padding: 0 6px; }
+.consumi-scheda { margin-top: 14px; }
+details.advanced > summary svg { vertical-align: -2px; }
+.scheda .foot { margin-top: 16px; }
+
+/* Passo 3: foto aerea con il disegno del tetto, tre taglie, grafico della proposta, tabella degli impianti */
+.mappa-tetto { height: 430px; border-radius: var(--radius-sm); margin-top: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+.mappa-tetto:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 2px; }
+.scelte.stretta { margin: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scelte.stretta .scelta { padding: 9px 12px; }
+.label-statico { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+.installabili { display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+.installabili strong { font-size: 1.1rem; }
+.interruttore { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; cursor: pointer; }
+.interruttore input { accent-color: var(--accent); width: 18px; height: 18px; margin-top: 2px; flex: none; }
+.toolbar.aggiungi .interruttore { margin-top: 0; align-self: center; }
+.pianta { display: block; width: min(320px, 100%); height: auto; margin-bottom: 8px; }
+.opzioni { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 14px; margin: 12px 0; }
+.opzione { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.opzione.consigliata { border-color: var(--accent-strong); box-shadow: 0 0 0 1px var(--accent-strong) inset; }
+.opzione h3 { margin: 0; font-size: 0.95rem; }
+.opzione p { margin: 0; }
+.opzione .taglia { font-size: 1.5rem; font-weight: 620; font-variant-numeric: tabular-nums; }
+.opzione .btn { margin-top: auto; align-self: flex-start; }
+.grafico-proposta { margin: 8px 0 12px; }
+.grafico-proposta svg { width: 100%; max-width: 680px; height: auto; display: block; font-size: 11px; fill: var(--muted); }
+.grafico-proposta .griglia { stroke: var(--line); }
+.grafico-proposta .zero { stroke: var(--muted); stroke-dasharray: 4 4; }
+.grafico-proposta .fascia { fill: var(--fv); opacity: 0.25; }
+.grafico-proposta .mediana { fill: none; stroke: var(--accent-strong); stroke-width: 2.5; }
+.grafico-proposta .punto { fill: var(--text); }
+.grafico-proposta .etichetta { fill: var(--text); font-weight: 600; }
+table.impianti input[type="date"] { min-width: 9.5rem; padding: 6px 8px; border: 1px solid var(--control-line); border-radius: 8px; background: var(--surface-2); }
+@media (max-width: 560px) {
+  .mappa-tetto { height: 340px; }
+  .scelte.stretta { grid-template-columns: 1fr; }
+}
+
+/* Passi 4 e 5: valori avanzati, frase dei risultati, cifre, requisiti, grafici */
+.sottotitolo-avanzati { font-size: 0.9rem; margin: 18px 0 4px; }
+.scelta > span .small { display: block; }
+.frase-risultato { font-size: 1.05rem; line-height: 1.55; }
+table.cifre td, table.cifre th { text-align: left; vertical-align: top; }
+table.cifre td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+table.cifre td.significato { color: var(--muted); min-width: 16rem; }
+ol.migliorare { list-style: none; counter-reset: voce; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 10px; }
+ol.migliorare li { counter-increment: voce; display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--surface-2); }
+ol.migliorare li > div { display: flex; flex-direction: column; gap: 2px; max-width: 72ch; }
+ol.migliorare li > div strong::before { content: counter(voce) ". "; }
+ol.migliorare .btn { flex: none; }
+ul.requisiti { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+ul.requisiti li { display: flex; gap: 10px; align-items: baseline; }
+ul.requisiti .badge { flex: none; min-width: 9.5rem; justify-content: center; }
+.schede-grafici { flex-wrap: wrap; margin-bottom: 12px; box-shadow: none; background: var(--surface-2); }
+.field.mese { max-width: 22rem; }
+.field.mese input[type="range"] { accent-color: var(--accent); width: 100%; }
+.grafico { margin: 6px 0 0; }
+.grafico svg { max-width: 760px; }
+.grafico .griglia { stroke: var(--line); }
+.grafico .asse-zero { stroke: var(--muted); stroke-dasharray: 4 4; }
+.grafico .titolo-asse { font-style: italic; }
+.grafico .etichetta-tornado { fill: var(--text); font-weight: 600; }
+.grafico figcaption { max-width: 80ch; margin-top: 4px; }
+.dati-grafico { margin-top: 8px; }
+.per-membro { margin-top: 14px; max-width: 32rem; }
+@media (max-width: 560px) {
+  ol.migliorare li, ul.requisiti li { flex-direction: column; align-items: flex-start; }
+  ul.requisiti .badge { min-width: 0; }
+}
+
+/* Revisione dell'interfaccia del 29/10/2026 (rapporti in web/.verifica-ui/): parole intere nelle tabelle, grafici
+   leggibili sul telefono, obiettivi da 44 px, griglie senza colonne vuote, campi allineati. */
+/* casa.css spezza le parole ovunque (overflow-wrap: anywhere): nelle tabelle le colonne si riducevano a poche lettere */
+table.data th, table.data td { overflow-wrap: normal; word-break: normal; }
+table.cifre { min-width: 46rem; }
+table.cifre tr > :first-child { min-width: 12rem; }
+.dati-grafico table.data { width: max-content; min-width: 100%; }
+.dati-grafico table.data td, .dati-grafico table.data th { white-space: nowrap; }
+.scorri { display: none; }
+@media (max-width: 860px) { .scorri { display: block; } }
+/* sul telefono il grafico tiene la sua scala e scorre di lato, invece di rimpicciolire le scritte a 4–6 px */
+.grafico-scroll { max-width: 100%; overflow-x: auto; }
+.grafico-scroll > svg { min-width: 680px; }
+.grafico-proposta .grafico-scroll > svg { min-width: 640px; }
+.grafico-scroll text { font-size: 12px; }
+/* obiettivi da toccare di almeno 44 px (DESIGN.md) */
+.field input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):not([type="file"]),
+.field select, table.data input, table.data select { min-height: 44px; }
+.btn.icon { min-width: 44px; justify-content: center; }
+details.advanced > summary { padding-block: 12px; }
+details.advanced[open] > summary { margin-bottom: 4px; }
+.scelte.stretta .scelta, .interruttore { min-height: 44px; align-items: center; }
+.field.mese input[type="range"] { height: 44px; }
+.mappa-tetto .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; }
+/* testo sotto i 12 px solo dove serve */
+.famiglia, .logo small { font-size: 0.75rem; }
+.badge { font-size: 0.8rem; }
+table.data thead th { font-size: 0.78rem; }
+/* griglie: due campi occupano tutta la riga, senza una terza colonna vuota */
+.grid { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+@media (min-width: 900px) { .allinea-campi > .field > label { min-block-size: 2lh; } }
+/* la proposta su tablet: due card affiancate e la consigliata sotto, a tutta riga */
+.opzioni-box { container-type: inline-size; }
+@container (min-width: 494px) and (max-width: 747px) { .opzione.consigliata { grid-column: 1 / -1; } }
+table.contatori td:nth-child(4) select { min-width: 15rem; }
+.facoltativo { white-space: nowrap; font-weight: 400; }
+/* la scheda per le famiglie: il riquadro del contatore resta dentro la card */
+.scheda fieldset.contatore { min-inline-size: 0; max-inline-size: 100%; }
+.scheda input[type="file"], .field input[type="file"] { width: 100%; min-width: 0; max-width: 100%; }
+.nav { scroll-padding-inline: 4px; }
+.kpi .significato { font-size: 0.78rem; color: var(--muted); }
+
+/* Famiglia Energia in chiaro: interazioni e illustrazioni comuni a Casa. */
+.casa-icon { object-fit: contain; flex: none; vertical-align: middle; }
+.section-icon { flex: none; }
+.section-icon .casa-icon { width: 28px; height: 28px; }
+.entry h2, .scheda h2 { display: flex; align-items: center; gap: 10px; }
+.entry { max-width: none; }
+.entry p { max-width: 70ch; }
+.tipo-configurazione { display: block; cursor: default; }
+.tipo-configurazione > label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.tipo-configurazione > label input { margin-block: 4px 0; }
+.tipo-configurazione > p { margin: 2px 0 0 26px; }
+.sidebar-actions button { min-height: 44px; }
+.sidebar .nav button:disabled { opacity: 0.72; cursor: default; }
+.stato-motore { margin-top: 12px; }
+.stato-motore > svg, .notice > svg { flex: none; }
+.notice:has(> svg) > div { flex: 1 1 auto; min-width: 0; }
+.notice > .btn.icon { flex: none; }
+.notice .notice { margin-bottom: 0; padding-inline: 0; }
+.result-status { grid-column: 1 / -1; }
+.result-status p { max-width: 80ch; }
+.field-label { min-height: 32px; }
+.field-label label { flex: 0 1 auto; }
+.field-label .info-trigger { margin-block: -4px; }
+.info-anchor, .info-anchor .info-trigger { overflow-wrap: normal; word-break: normal; }
+.issues > li { margin-block: 8px; }
+.issue-summary > summary, .issue-notes > summary { min-height: 44px; padding-block: 10px; }
+.issue-summary { padding-top: 0; }
+.issue-errors .issue-chips li > span { background: var(--bad-soft); color: var(--bad-text); }
+.issue-errors ul { padding-left: 18px; }
+.issue-errors ul.issue-chips { padding-left: 0; }
+.advanced > summary .casa-icon { margin-right: 6px; }
+.table-wrap { width: 100%; overscroll-behavior-x: contain; }
+table.data thead th { hyphens: none; overflow-wrap: normal; word-break: normal; text-transform: none; letter-spacing: normal; min-width: min-content; }
+table.data:not(.contatori):not(.cifre) { width: max-content; min-width: 100%; }
+table.data:not(.contatori):not(.cifre) thead th { white-space: nowrap; }
+.scheda-testa > div { min-width: 0; }
+.scheda .logo-mark { background: transparent; }
+@media (min-width: 900px) { .allinea-campi > .field > .field-label { min-block-size: calc(2lh + 6px); } }
+@media (max-width: 860px) {
+  .sidebar-foot .small, .sidebar-foot .stato-motore { display: none; }
+  .sidebar-actions { margin-top: 8px; }
+}
+@media (max-width: 560px) {
+  .info-trigger { width: 44px; height: 44px; }
+  .field-label { min-height: 44px; }
+  .card-head { align-items: flex-start; }
+  .card-head .btn { width: 100%; justify-content: center; }
+  .issue-chips .info-trigger { margin-block: -3px; }
+  .sidebar-actions { gap: 4px; }
+  .sidebar-actions button { font-size: 0.78rem; }
+}
+
+/* Tappa 6 bis B (pulizia): collegamento «Come lo calcoliamo» e sezioni chiuse, come in Casa. */
+.method-line { display: block; margin-top: 8px; }
+.method-link { font-weight: 600; }
+details.fold > summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+@media print { .method-link::after { content: " (" attr(href) ")"; font-weight: 400; overflow-wrap: anywhere; } }
+.kpi .k .info-trigger { margin-block: -10px; }
+
+/* Passi 1-4: sotto il titolo del passo (h1) le sezioni sono h2 e i sottotitoli h3, per una gerarchia senza salti
+   (WCAG 1.3.1); l'aspetto resta quello degli h3 e h4 di Casa (casa.css non si tocca). */
+main.panel:not(.entry) h2 { font-size: 1rem; }
+main.panel:not(.entry) h3 { font-size: 0.92rem; }
+.section > h2 { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+main.panel:not(.entry) .opzione h3 { font-size: 0.95rem; }
+
+/* Barra comune di «Energia in chiaro» (src/ui/famiglia.tsx), uguale in Casa e nella Comunità energetica:
+   il nome della famiglia porta al portale raccasamuele.it, i due siti si raggiungono con un clic. */
+.famiglia-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; padding: 0 8px 12px; border-bottom: 1px solid var(--line); font-size: 0.75rem; }
+.famiglia-barra a { text-decoration: none; border-radius: 999px; }
+.famiglia-barra a::after { content: none; }
+.famiglia-barra a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.famiglia-barra .famiglia-nome { color: var(--accent-text); font-weight: 600; letter-spacing: 0.02em; padding: 4px 2px; }
+.famiglia-barra ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; }
+.famiglia-barra li a { display: inline-flex; align-items: center; min-height: 28px; padding: 2px 10px; color: var(--muted); font-weight: 500; }
+.famiglia-barra li a:hover { background: var(--surface-2); color: var(--text); }
+.famiglia-barra li a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-strong); font-weight: 600; }
+@media (pointer: coarse) { .famiglia-barra li a, .famiglia-barra .famiglia-nome { min-height: 44px; display: inline-flex; align-items: center; } }
+@media (max-width: 860px) { .famiglia-barra { padding-bottom: 8px; } }

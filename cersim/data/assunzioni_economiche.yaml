@@ -1,0 +1,49 @@
+# Assunzioni economiche di default. Sono IPOTESI, non dati normativi:
+# l'utente le sostituisce con i propri preventivi. Importi IVA esclusa,
+# in termini reali (euro costanti).
+
+versione: "2026-10-15"
+revisione: 2026-10-15
+scadenza: 2027-10-15
+
+capex:
+  fonte: "DM 414/2023, Allegato 2: costo di investimento massimo di riferimento (IVA esclusa). Usato come stima alta."
+  # I costi della fonte sono per kW di potenza; qui stimano il costo, che dipende soprattutto da moduli e strutture:
+  # si applicano ai kWp dei moduli (DC), non alla potenza nominale GSE, che con un inverter più piccolo farebbe
+  # sembrare l'impianto più economico. Fasce della tariffa premio e limite di 1 MW restano sulla potenza GSE.
+  base_potenza: DC
+  applicazione: scaglioni  # ogni fascia al suo costo unitario: costo continuo e crescente con la taglia
+  fasce:
+    - {fino_a_kw: 20, eur_per_kw: 1500}
+    - {fino_a_kw: 200, eur_per_kw: 1200}
+    - {fino_a_kw: 600, eur_per_kw: 1100}
+    - {fino_a_kw: 1000, eur_per_kw: 1050}
+  include: "componenti, inverter, strutture, opere, connessione, progettazione e pratiche (spese ammissibili DM)"
+
+impianto:
+  fonte: "Ipotesi del modello (valori tipici di mercato), da sostituire con preventivi"
+  om_quota_capex_anno: 0.015
+  assicurazione_quota_capex_anno: 0.003
+  sostituzione_inverter_eur_per_kw_ac: 120
+  anno_sostituzione_inverter: 12
+  smaltimento_eur_per_kwp: 20
+  degradazione_annua: 0.005
+  vita_utile_anni: 25
+
+configurazione:
+  fonte: "Ipotesi del modello"
+  costituzione_eur: {CER: 2500, gruppo: 600}  # atto costitutivo/statuto o contratto tra i partecipanti
+  gestione_eur_anno: {CER: 1200, gruppo: 300}  # contabilità separata, piattaforma, referente
+
+finanza:
+  fonte: "Ipotesi del modello"
+  tasso_sconto_reale: 0.04
+
+prezzi:
+  fonte: "Ipotesi del modello: livello medio atteso del prezzo zonale nei 25 anni, in termini reali. La forma oraria viene dagli anni storici."
+  media_eur_mwh: {basso: 80, base: 110, alto: 140}
+  vendita_mercato_sconto: 0.10  # se l'energia non è ritirata dal GSE ma venduta a un trader
+
+bolletta:
+  fonte: "Ipotesi del modello: quota energia + oneri variabili evitati per kWh autoconsumato; inserire il valore della propria bolletta"
+  costo_evitabile_eur_kwh: 0.15

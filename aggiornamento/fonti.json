@@ -1,0 +1,133 @@
+{
+  "versione": 1,
+  "progetto": "cer",
+  "frequenza_routine_mesi": 3,
+  "nota": "Inventario dei dati che invecchiano. La routine trimestrale controlla le voci che scadono (ultimo_controllo + frequenza_mesi) prima della routine successiva e segue aggiornamento/ISTRUZIONI.md. «valori» deve coincidere con i file YAML: lo verifica tests/test_aggiornamento.py.",
+  "fonti": [
+    {
+      "id": "gse-regole-operative",
+      "descrizione": "Regole operative GSE del Decreto CACER e del TIAD",
+      "dove": ["cersim/data/parametri_normativi.yaml", "docs/fonti_normative.md"],
+      "valori": [{ "file": "cersim/data/parametri_normativi.yaml", "percorso": "fonti.RO", "valore": "GSE, Regole Operative Decreto CACER e TIAD, versione del 16 luglio 2025" }],
+      "fonte": "GSE, pagina delle comunità energetiche rinnovabili, documenti di riferimento",
+      "url": "https://www.gse.it/servizi-per-te/autoconsumo/gruppi-di-autoconsumatori-e-comunita-di-energia-rinnovabile",
+      "ultimo_controllo": "2026-10-15",
+      "frequenza_mesi": 3,
+      "come_controllare": "Controllare se il GSE ha pubblicato una versione delle Regole operative successiva al 16 luglio 2025 e che cosa cambia (formule, soglie, requisiti).",
+      "se_cambia": "Non cambiare le regole in automatico: rapporto con le differenze per paragrafo; la revisione del pacchetto normativo la fa Samuele con un piano.",
+      "automatico": false
+    },
+    {
+      "id": "arera-trase-btau",
+      "descrizione": "Valori TRASE e BTAU per il contributo di valorizzazione (CACV), anno per anno",
+      "dove": ["cersim/data/parametri_normativi.yaml", "docs/fonti_normative.md"],
+      "valori": [
+        { "file": "cersim/data/parametri_normativi.yaml", "percorso": "cacv.trase_eur_mwh.2026", "valore": 11.9 },
+        { "file": "cersim/data/parametri_normativi.yaml", "percorso": "cacv.btau_max_eur_mwh.2026", "valore": 0.68 }
+      ],
+      "fonte": "ARERA, TIT: tabelle allegate alla delibera di aggiornamento annuale (2026: delibera 575/2025/R/eel, Tabella 3)",
+      "url": "https://www.arera.it/atti-e-provvedimenti",
+      "ultimo_controllo": "2026-11-02",
+      "frequenza_mesi": 3,
+      "come_controllare": "A fine anno ARERA pubblica i valori dell'anno seguente: cercare la delibera di aggiornamento delle tariffe di trasmissione e distribuzione e leggere TRASE e il massimo BTAU fra BTA1 e BTA6.",
+      "se_cambia": "Aggiungere l'anno nuovo a trase_eur_mwh e btau_max_eur_mwh con la delibera nella fonte; aggiornare docs/fonti_normative.md e, se serve, la scadenza del pacchetto.",
+      "soglia_pct": 20,
+      "automatico": true
+    },
+    {
+      "id": "tip-termine-contingente",
+      "descrizione": "Termine di accesso alla tariffa premio e contingente di 5 GW",
+      "dove": ["cersim/data/parametri_normativi.yaml", "cersim/eligibility.py", "docs/fonti_normative.md"],
+      "valori": [{ "file": "cersim/data/parametri_normativi.yaml", "percorso": "tip.termine_accesso_entrata_esercizio", "valore": "2027-12-31" }],
+      "fonte": "DM MASE 7 dicembre 2023 n. 414, art. 1 c. 2; contatore del contingente sul sito GSE",
+      "url": "https://www.gse.it/servizi-per-te/autoconsumo/gruppi-di-autoconsumatori-e-comunita-di-energia-rinnovabile",
+      "ultimo_controllo": "2026-10-16",
+      "frequenza_mesi": 3,
+      "come_controllare": "Controllare se è stata decisa una proroga del termine del 31/12/2027 (decreto o legge, non richieste delle associazioni) e a quanta potenza è arrivato il contingente.",
+      "se_cambia": "Solo con un atto pubblicato: rapporto con l'atto e la nuova data; la modifica del termine nel codice la decide Samuele.",
+      "automatico": false
+    },
+    {
+      "id": "gse-corrispettivi",
+      "descrizione": "Corrispettivi annui del GSE per le configurazioni",
+      "dove": ["cersim/data/parametri_normativi.yaml"],
+      "valori": [{ "file": "cersim/data/parametri_normativi.yaml", "percorso": "corrispettivi_gse.fasce.1.fisso_eur_anno", "valore": 15 }],
+      "fonte": "DM MASE 15 marzo 2024 n. 106; GSE, pagina Corrispettivi e tariffa",
+      "url": "https://www.gse.it/",
+      "ultimo_controllo": "2026-10-15",
+      "frequenza_mesi": 12,
+      "come_controllare": "Verificare sulla pagina GSE dei corrispettivi che le fasce e gli importi siano invariati.",
+      "se_cambia": "Aggiornare le fasce con la fonte; rieseguire i test economici.",
+      "soglia_pct": 20,
+      "automatico": true
+    },
+    {
+      "id": "gse-oneri-rid",
+      "descrizione": "Oneri amministrativi del Ritiro dedicato",
+      "dove": ["cersim/data/parametri_normativi.yaml", "docs/fonti_normative.md"],
+      "valori": [{ "file": "cersim/data/parametri_normativi.yaml", "percorso": "rid.scaglioni.0.eur_per_kw", "valore": 0.7 }],
+      "fonte": "DM MiSE 24/12/2014, tabella 3; GSE, Tariffe per la copertura degli oneri sostenuti dal GSE",
+      "url": "https://www.gse.it/",
+      "ultimo_controllo": "2026-10-16",
+      "frequenza_mesi": 12,
+      "come_controllare": "Verificare sulla pagina GSE del Ritiro dedicato che gli scaglioni per il solare e il massimale siano invariati.",
+      "se_cambia": "Aggiornare scaglioni e massimale con la fonte.",
+      "soglia_pct": 20,
+      "automatico": true
+    },
+    {
+      "id": "capex-dm414",
+      "descrizione": "Costo massimo di riferimento degli impianti, usato come stima alta",
+      "dove": ["cersim/data/assunzioni_economiche.yaml"],
+      "valori": [{ "file": "cersim/data/assunzioni_economiche.yaml", "percorso": "capex.fasce.0.eur_per_kw", "valore": 1500 }],
+      "fonte": "DM 414/2023, Allegato 2: costo di investimento massimo di riferimento",
+      "url": "https://www.mase.gov.it/",
+      "ultimo_controllo": "2026-10-15",
+      "frequenza_mesi": 12,
+      "come_controllare": "Verificare che l'Allegato 2 non sia stato modificato; la scadenza del file è indicata nel campo scadenza.",
+      "se_cambia": "Aggiornare le fasce con la fonte e la scadenza del file.",
+      "soglia_pct": 20,
+      "automatico": true
+    },
+    {
+      "id": "classificazione-soggetti",
+      "descrizione": "Ammissibilità dei soggetti e esenzione dal fattore F",
+      "dove": ["cersim/data/classificazione_soggetti.yaml"],
+      "valori": [],
+      "fonte": "DM 414/2023 art. 3 e Allegato 1; Regole operative GSE",
+      "url": "https://www.gse.it/",
+      "ultimo_controllo": "2026-10-15",
+      "frequenza_mesi": 6,
+      "come_controllare": "Controllare chiarimenti o FAQ del GSE su condominio e terzo settore (fattore F, quota eccedentaria).",
+      "se_cambia": "Rapporto; la classificazione la conferma l'esperto esterno (COSA_MANCA.md).",
+      "automatico": false
+    },
+    {
+      "id": "pvgis-api",
+      "descrizione": "Versione dell'API PVGIS usata dall'intermediario",
+      "dove": ["intermediario/src/index.ts"],
+      "valori": [],
+      "fonte": "JRC, PVGIS, note di rilascio",
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/release-notes_en",
+      "ultimo_controllo": "2026-10-29",
+      "frequenza_mesi": 12,
+      "come_controllare": "Leggere le note di rilascio: ritiro della v5_3, nuova versione, cambi di formato.",
+      "se_cambia": "Rapporto; la migrazione si fa a mano con prove dal vivo dell'intermediario.",
+      "automatico": false
+    },
+    {
+      "id": "prezzi-zonali-gme",
+      "descrizione": "Prezzi orari zonali per il ricavo dell'energia",
+      "dove": ["cersim/prices.py"],
+      "valori": [],
+      "fonte": "GME, prezzi del mercato del giorno prima",
+      "url": "https://www.mercatoelettrico.org/",
+      "ultimo_controllo": "2026-10-24",
+      "frequenza_mesi": 12,
+      "come_controllare": "Solo verificare se è arrivata la licenza d'uso del GME (COSA_MANCA.md): i dati non si scaricano.",
+      "se_cambia": "Nessuna azione automatica.",
+      "licenza": "uso pubblico solo con licenza GME",
+      "automatico": false
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "formato": "cersim-scheda-consumi",
+  "versione": 1,
+  "modulo": "famiglia",
+  "max_contatori": 5,
+  "max_testo": 80,
+  "scarto_fasce": 0.2,
+  "max_kwh": 10000000.0,
+  "kwh_famiglia_tipo": 2700,
+  "cosa_serve": [
+    {
+      "cosa": "Il consumo di luce dell'ultimo anno, in kWh",
+      "dove": "In bolletta, di solito in prima pagina vicino al grafico dei consumi, alla voce consumo annuo o consumo degli ultimi 12 mesi. Oppure sul Portale Consumi."
+    },
+    {
+      "cosa": "I consumi dell'anno per fascia oraria: F1 e F2+F3",
+      "dove": "Sul Portale Consumi, o in bolletta se riporta i consumi annui per fascia. Le fasce di una sola bolletta valgono per uno o due mesi: in quel caso somma le bollette dell'anno. Se ci sono F2 e F3 separate, sommale. Se non le trovi, lascia vuoto."
+    }
+  ],
+  "portale_consumi": "Il Portale Consumi di ARERA e Acquirente Unico (www.consumienergia.it) è gratuito: si entra con SPID o CIE, si sceglie la fornitura di energia elettrica e si trovano i consumi mese per mese e per fascia.",
+  "codice_pod": "Il codice POD (inizia con IT e contiene una E, per esempio IT001E…) è in prima pagina della bolletta. Alla simulazione non serve e il link per le famiglie non lo chiede; per una comunità energetica aiuta chi coordina a trovare l'area convenzionale sulla mappa del GSE.",
+  "privacy": "I dati che inserisci servono solo a preparare la scheda: il sito non li salva. Alla fine scarichi un piccolo file e lo mandi tu a chi coordina, per email o messaggio. Come nome puoi usare quello che preferisci, per esempio \"interno 3\".",
+  "profili": [
+    {
+      "etichetta": "Una famiglia",
+      "tipo_soggetto": "Persona fisica",
+      "tipologia": "Famiglia"
+    },
+    {
+      "etichetta": "Un'attività (negozio, ufficio, laboratorio)",
+      "tipo_soggetto": null,
+      "tipologia": null
+    },
+    {
+      "etichetta": "Il condominio (parti comuni)",
+      "tipo_soggetto": "Condominio",
+      "tipologia": "Municipio / uffici pubblici"
+    },
+    {
+      "etichetta": "Un ente pubblico (Comune, scuola)",
+      "tipo_soggetto": "Ente territoriale (es. Comune)",
+      "tipologia": null
+    }
+  ],
+  "soggetti_attivita": [
+    {
+      "valore": "PMI",
+      "etichetta": "Piccola o media impresa"
+    },
+    {
+      "valore": "Grande impresa",
+      "etichetta": "Grande impresa"
+    },
+    {
+      "valore": "Ente del terzo settore",
+      "etichetta": "Associazione o ente del terzo settore"
+    },
+    {
+      "valore": "Ente religioso",
+      "etichetta": "Ente religioso"
+    },
+    {
+      "valore": "Altro",
+      "etichetta": "Altro"
+    }
+  ],
+  "tipologie_attivita": [
+    "Ufficio / negozio",
+    "PMI / laboratorio"
+  ],
+  "tipologie_ente": [
+    "Municipio / uffici pubblici",
+    "Scuola"
+  ]
+}

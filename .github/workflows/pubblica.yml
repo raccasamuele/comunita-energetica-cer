@@ -1,0 +1,84 @@
+# Pubblicazione automatica di cer.raccasamuele.it: a ogni push su main, se motore, sito e intermediario passano i
+# controlli, si pubblica il Worker cer-sito con la CLI cf (intermediario/README.md, "Pubblicazione").
+# Servono, nelle impostazioni del repository su GitHub:
+# - il segreto CLOUDFLARE_API_TOKEN, un token di Cloudflare creato dal titolare dell'account (modello "Edit
+#   Cloudflare Workers", limitato all'account e alla zona raccasamuele.it);
+# - la variabile CLOUDFLARE_ACCOUNT_ID, l'identificativo dell'account (non è un segreto).
+# Senza il token la pubblicazione si salta, con un avviso: i controlli girano comunque.
+
+name: pubblica
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pubblica-cer-sito
+  cancel-in-progress: false
+
+# I lavori leggono solo il repository: il token di GitHub non può scrivere.
+# Azioni fissate al commit della versione, scritta nel commento: un'etichetta spostata non cambia cosa gira.
+permissions:
+  contents: read
+
+jobs:
+  controlli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: pytest
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            intermediario/package-lock.json
+      - name: Sito
+        working-directory: web
+        run: npm ci && npm run typecheck && npm run build
+      - name: Intermediario
+        working-directory: intermediario
+        run: npm ci && npm test
+
+  pubblica:
+    needs: controlli
+    runs-on: ubuntu-latest
+    env:
+      SITO: cer.raccasamuele.it
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            web/package-lock.json
+            intermediario/package-lock.json
+      - name: Sito
+        working-directory: web
+        run: npm ci && npm run build
+      # Il token di Cloudflare serve solo all'ultimo passo: installazione e build girano senza.
+      - name: Dipendenze della pubblicazione
+        working-directory: intermediario
+        run: npm ci
+      - name: Pubblica cer-sito
+        working-directory: intermediario
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::warning::Manca il segreto CLOUDFLARE_API_TOKEN: pubblicazione saltata."
+            exit 0
+          fi
+          npx cf deploy
