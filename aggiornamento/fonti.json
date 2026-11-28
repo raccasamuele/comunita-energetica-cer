@@ -99,7 +99,7 @@
       "ultimo_controllo": "2026-10-15",
       "frequenza_mesi": 6,
       "come_controllare": "Controllare chiarimenti o FAQ del GSE su condominio e terzo settore (fattore F, quota eccedentaria).",
-      "se_cambia": "Rapporto; la classificazione la conferma l'esperto esterno (COSA_MANCA.md).",
+      "se_cambia": "Rapporto; la classificazione la conferma l'esperto esterno.",
       "automatico": false
     },
     {
@@ -124,7 +124,7 @@
       "url": "https://www.mercatoelettrico.org/",
       "ultimo_controllo": "2026-10-24",
       "frequenza_mesi": 12,
-      "come_controllare": "Solo verificare se è arrivata la licenza d'uso del GME (COSA_MANCA.md): i dati non si scaricano.",
+      "come_controllare": "Solo verificare se è arrivata la licenza d'uso del GME: i dati non si scaricano.",
       "se_cambia": "Nessuna azione automatica.",
       "licenza": "uso pubblico solo con licenza GME",
       "automatico": false

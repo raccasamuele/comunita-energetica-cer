@@ -181,30 +181,15 @@ con i risultati in una scheda con i grafici nella chat. Dettagli in [docs/GUIDA-
 | `cersim/cli.py` | riga di comando `cersim`: valida, analizza, report, schema |
 | `cersim/mcp/` | server MCP per gli agenti AI (`cersim-mcp`): le operazioni di `web.py`, con PVGIS scaricato dal server e la scheda con i grafici nella chat (`scheda.html`, MCP Apps) ([guida](docs/GUIDA-MCP.md)) |
 | `estensione/` | estensione per Claude Desktop: `crea_pacchetto.py` crea il file `.mcpb` da installare con un doppio clic |
-| `web/` | nuova interfaccia web, in costruzione: React, stile comune con il simulatore della casa, motore nel browser ([docs/web_architettura.md](docs/web_architettura.md)) |
+| `web/` | l'interfaccia web pubblicata su cer.raccasamuele.it: React, stile comune con il simulatore della casa, motore nel browser ([docs/web_architettura.md](docs/web_architettura.md)) |
 | `intermediario/` | Worker di Cloudflare che inoltra a PVGIS le richieste del sito, con cache ([README](intermediario/README.md)) |
 
 ## Stato
 
-- [x] Tappa 1, motore fisico: bilancio orario, PVGIS, consumi, requisiti
-- [x] Tappa 2, euro: tariffa premio, valorizzazione ARERA, registro, VAN, scenari, dimensionamento
-- [x] Tappa 3, interfaccia: app in 5 passi, raccolta dei consumi con un link, tetto sulla foto aerea, proposta
-  delle taglie
-- [ ] Tappa 4: report ed Excel, consumi misurati fatti; mancano prezzi orari nell'app pubblica, la prova con un
-  file reale, validazione esterna e pubblicazione
-- [ ] Interfaccia web (sito statico gratuito, motore nel browser con Pyodide): prova di fattibilità, architettura e scheletro fatti il 28/10
-
-Le cose ancora da fare sono in [COSA_MANCA.md](COSA_MANCA.md), il piano completo in [PLAN.md](PLAN.md).
-
-### Pubblicazione di prova (accesso ristretto)
-
-Finché la verifica normativa e la revisione di un esperto non sono complete l'app va pubblicata **solo per persone
-invitate**:
-
-1. su [share.streamlit.io](https://share.streamlit.io) crea l'app scegliendo il repository, il ramo `main` e il
-   file `app.py`;
-2. nelle impostazioni di condivisione scegli *Only specific people can view this app* e invita le persone per
-   email.
+Il sito è online su <https://cer.raccasamuele.it>. Prima di considerare affidabili i risultati mancano la revisione
+di un caso di comunità energetica e di un caso condominiale da parte di un esperto esterno, la prova dei consumi
+misurati con file reali e i prezzi orari nell'app pubblica, che richiedono l'autorizzazione del GME. L'app Streamlit
+(`app.py`) resta nel repository finché il sito non la sostituisce del tutto.
 
 ## Privacy
 

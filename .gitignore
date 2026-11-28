@@ -12,3 +12,7 @@ node_modules/
 *.log
 .cloudflare/
 .verifica-ui/
+
+# Appunti di lavoro locali, fuori dal repository
+PLAN.md
+COSA_MANCA.md

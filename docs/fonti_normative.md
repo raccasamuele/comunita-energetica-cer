@@ -1,4 +1,4 @@
-# Fonti normative verificate (PLAN.md, punto 9)
+# Fonti normative verificate
 
 Verifica del 15/10/2026 sui testi originali. Ogni regola implementata in `cersim` rimanda a questa pagina; i valori numerici sono in [`cersim/data/parametri_normativi.yaml`](../cersim/data/parametri_normativi.yaml).
 
@@ -103,7 +103,7 @@ FAQ GSE, guida e scheda Unioncamere sulle CER (2025), caso d'uso condominiale de
   sconosciuta**: nella verifica della quota eccedentaria (`economics._verifica_eccedenza`) quello che riceve non conta
   fra le somme date a non-imprese, e il risultato avvisa che per alcuni membri non è noto se siano imprese.
 - I valori sono in [`classificazione_soggetti.yaml`](../cersim/data/classificazione_soggetti.yaml); restano da far
-  confermare all'esperto (PLAN.md, punto 22) o al GSE.
+  confermare a un esperto esterno o al GSE.
 
 ## Ancora aperto
 - Fonte dei prezzi per l'app pubblica (licenza).
