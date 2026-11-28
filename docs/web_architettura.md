@@ -433,7 +433,7 @@ progetti. Le regole di stile sono in [DESIGN.md](../DESIGN.md).
 5. ~~Passi 4 e 5: economia, risultati completi con grafici, requisiti e sensibilità, report PDF ed Excel con i
    pacchetti caricati a richiesta~~ (29/10/2026).
 6. Revisione dell'accessibilità (WCAG 2.1 AA) e prova in proiezione; poi l'app Streamlit si ritira. Verifica axe-core
-   del 24/11 e piano del ritiro in [chiusura_sito.md](chiusura_sito.md).
+   del 24/11 fatta, senza violazioni.
 
 Miglioramenti possibili per i tempi:
 - import pigro di `requests`;

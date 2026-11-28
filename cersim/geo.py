@@ -18,7 +18,7 @@ MIN_INTERVALLO_S = 1.0  # policy Nominatim: al massimo 1 richiesta al secondo
 
 # Area per la correzione geografica della tariffa premio FV (DM 414/2023, Allegato 1)
 # e zona di mercato GME nella configurazione zonale in vigore dal 1/1/2021.
-# Da riverificare sulle fonti nella Tappa 2 (PLAN.md, punto 9).
+# Verificata sulle fonti in docs/fonti_normative.md.
 REGIONI: dict[str, tuple[str, str]] = {
     "Piemonte": ("Nord", "NORD"),
     "Valle d'Aosta": ("Nord", "NORD"),
